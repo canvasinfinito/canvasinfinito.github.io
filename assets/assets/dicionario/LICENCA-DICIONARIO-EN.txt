@@ -1,0 +1,52 @@
+DICIONARIO DE INGLES
+====================
+
+O corretor de ingles do Canvas Infinito usa tres fontes livres.
+
+1. A ORTOGRAFIA: SCOWL / en_US do Hunspell (vero-en.bin.gz, e a
+   peneira da lista en.bin.gz)
+
+   The English dictionaries come directly from SCOWL and are thus
+   under the same copyright of SCOWL. The affix file is a heavily
+   modified version of the original english.aff file which was
+   released as part of Geoff Kuenning's Ispell and as such is covered
+   by his BSD license.
+
+   Copyright 2000-2018 by Kevin Atkinson
+
+   Permission to use, copy, modify, distribute and sell these word
+   lists, the associated scripts, the output created from the scripts,
+   and its documentation for any purpose is hereby granted without fee,
+   provided that the above copyright notice appears in all copies and
+   that both that copyright notice and this permission notice appear in
+   supporting documentation. Kevin Atkinson makes no representations
+   about the suitability of this array for any purpose. It is provided
+   "as is" without express or implied warranty.
+
+   O README completo (com os avisos do Ispell) acompanha o codigo-fonte
+   deste aplicativo, em tools/dicionario/scowl/.
+
+2. LISTA DE PALAVRAS
+   github.com/dwyl/english-words
+   Licenca: Unlicense (dominio publico)
+
+3. FREQUENCIA DE USO
+   github.com/hermitdave/FrequencyWords
+   Copyright (c) 2016 Hermit Dave
+   Licenca: MIT
+
+   Permission is hereby granted, free of charge, to any person
+   obtaining a copy of this software and associated documentation
+   files (the "Software"), to deal in the Software without
+   restriction, including without limitation the rights to use,
+   copy, modify, merge, publish, distribute, sublicense, and/or
+   sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following
+   conditions:
+
+   The above copyright notice and this permission notice shall be
+   included in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+Refazer: python tools/gerar_dicionario_vero.py

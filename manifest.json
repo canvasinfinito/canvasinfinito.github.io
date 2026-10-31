@@ -1,0 +1,113 @@
+{
+    "name": "Canvas Infinito",
+    "short_name": "Canvas",
+    "description": "Um quadro branco sem fim que também é Kanban, Agenda, Notas, Tarefas e o controle do dinheiro do seu negócio. Trabalha sem internet depois da primeira entrada.",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "orientation": "any",
+    "prefer_related_applications": false,
+    "lang": "pt-BR",
+    "dir": "ltr",
+    "id": "/",
+    "categories": [
+        "productivity",
+        "business",
+        "utilities"
+    ],
+    "display_override": [
+        "window-controls-overlay",
+        "standalone"
+    ],
+    "shortcuts": [
+        {
+            "name": "Nova nota",
+            "short_name": "Nota",
+            "description": "Escrever uma nota nova",
+            "url": "./?abrir=criar.nota",
+            "icons": [
+                {
+                    "src": "icons/atalho-nota.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        },
+        {
+            "name": "Nova despesa",
+            "short_name": "Despesa",
+            "description": "Lançar uma conta a pagar",
+            "url": "./?abrir=dinheiro.despesas",
+            "icons": [
+                {
+                    "src": "icons/atalho-despesa.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        },
+        {
+            "name": "Agenda de hoje",
+            "short_name": "Agenda",
+            "description": "Ver os compromissos de hoje",
+            "url": "./?abrir=ir.agenda",
+            "icons": [
+                {
+                    "src": "icons/atalho-agenda.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        }
+    ],
+    "share_target": {
+        "action": "./",
+        "method": "GET",
+        "params": {
+            "title": "titulo",
+            "text": "texto",
+            "url": "endereco"
+        }
+    },
+    "screenshots": [
+        {
+            "src": "capturas/a-home-na-janela.png",
+            "sizes": "1920x992",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "A Home do Canvas Infinito no computador"
+        },
+        {
+            "src": "capturas/a-home-no-celular.png",
+            "sizes": "1080x2340",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "A Home do Canvas Infinito no celular"
+        }
+    ],
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

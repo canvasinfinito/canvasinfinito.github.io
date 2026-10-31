@@ -1,0 +1,22 @@
+drift=2.19.1+1
+sqlite3=2.4.5
+
+# 🔴 5.0.0 — POR QUE ESTE ARQUIVO EXISTE
+#
+# `web/sqlite3.wasm` e `web/drift_worker.dart.js` NAO sao codigo deste projeto:
+# sao artefatos COPIADOS do pacote `drift`/`sqlite3`, e cada um casa com a versao
+# do pacote que o gerou. Os arquivos na pasta sao de 07/04/2026.
+#
+# Subir o drift sem recopiar os dois quebra o banco da web **em execucao** — e
+# nada avisa: `analyze` passa, `flutter test` passa (na suite o banco e' em
+# memoria), a sonda de pacote passa (o texto da versao esta la'). So aparece
+# abrindo a web num navegador de verdade, que era exatamente o vao onde o defeito
+# B01 desta auditoria morava.
+#
+# Este arquivo e' a memoria de qual versao gerou os artefatos que estao ali. A
+# guarda `test/core/os_artefatos_da_web_acompanham_o_drift_test.dart` compara com
+# o `pubspec.lock` e reprova quando divergem.
+#
+# Ao subir o drift:
+#   dart run drift_dev:copy_worker --sqlite3 web/
+#   e atualize as duas linhas do topo deste arquivo.

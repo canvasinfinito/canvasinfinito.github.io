@@ -1,0 +1,68 @@
+{
+  "_leia": "As novidades PÚBLICAS do Canvas, mostradas na apresentação (web/index.html, seção Novidades). Só mudança grande, que interessa a quem ainda não usa — o polimento de cada versão fica em kWhatsNew, dentro do app. A mais nova vem primeiro; a página mostra as quatro primeiras. Cada uma cita as promessas da página que ela sustenta, e a régua o_site_cumpre_o_que_promete exige prova no código para cada uma.",
+  "novidades": [
+    {
+      "versao": "13.7.0",
+      "data": "2026-10-25",
+      "titulo": "O projeto diz em que pé está",
+      "texto": "No Canvas Projetos, cada etapa mostra se é a da vez, se já foi feita ou se atrasou. Um painel no alto conta o quanto falta e leva você até a etapa atual num toque.",
+      "promessas": [
+        "canvas-projetos"
+      ]
+    },
+    {
+      "versao": "13.7.0",
+      "data": "2026-10-25",
+      "titulo": "Notas que se leem formatadas",
+      "texto": "Título, negrito, listas de marcar e citações aparecem formatados — sem símbolo nenhum no meio do texto enquanto você lê.",
+      "promessas": [
+        "notas"
+      ]
+    },
+    {
+      "versao": "13.7.0",
+      "data": "2026-10-25",
+      "titulo": "Você sai do Drive quando quiser",
+      "texto": "Sair de uma conta do Google Drive corta o acesso do Canvas a ela no Google, em todos os aparelhos. Os arquivos continuam no seu Drive.",
+      "promessas": [
+        "arquivos-no-drive"
+      ]
+    },
+    {
+      "versao": "13.6.0",
+      "data": "2026-10-25",
+      "titulo": "Seus arquivos no seu Google Drive",
+      "texto": "Anexos e documentos vão direto para o seu Drive. Dá para ligar mais de uma conta, dar um nome a cada uma e ver quanto espaço sobra — o Canvas avisa antes de lotar.",
+      "promessas": [
+        "arquivos-no-drive"
+      ]
+    },
+    {
+      "versao": "13.6.0",
+      "data": "2026-10-25",
+      "titulo": "Corretor que funciona sem internet",
+      "texto": "Português do Brasil, inglês ou os dois juntos, com dicionários completos dentro do aplicativo: acento, palavra trocada e sugestão, mesmo no avião.",
+      "promessas": [
+        "corretor"
+      ]
+    },
+    {
+      "versao": "13.6.0",
+      "data": "2026-10-25",
+      "titulo": "O lado corporativo começa num toque",
+      "texto": "Vire a chave para Corporativo e crie o primeiro projeto da empresa na hora. Pessoal e trabalho ficam separados, cada um com os seus projetos.",
+      "promessas": [
+        "pessoal-corporativo"
+      ]
+    },
+    {
+      "versao": "13.6.0",
+      "data": "2026-10-25",
+      "titulo": "Peça o seu convite por aqui",
+      "texto": "Conte quem você é e por que quer experimentar. Cada pedido é lido por uma pessoa, e o convite chega por e-mail com o passo a passo.",
+      "promessas": [
+        "convite"
+      ]
+    }
+  ]
+}

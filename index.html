@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!--
+    ═══════════════════════════════════════════════════════════════════════
+    A APRESENTAÇÃO — o site é um canvas (13.6.0)
+    ═══════════════════════════════════════════════════════════════════════
+
+    O dono, em 24/10/2026:
+
+      "uma página de início com uma apresentação espetacular de todo o
+       projeto […] faça a nível canvas, fazendo uma página bem diferente […]
+       animações de uso real criado por você e dê os exemplos reais de como
+       usar o app […] aproveite para certificar todas as promessas do app
+       para comprovar que o que está sendo dito realmente será uma verdade"
+
+    🔴 AS TRÊS REGRAS DESTA PÁGINA
+
+    1. É HTML puro, sem nada de fora (nenhuma fonte, script ou folha de outro
+       domínio): ela pinta no primeiro quadro, e o Flutter — que pesa
+       megabytes — só é buscado quando alguém pede para ENTRAR. As fontes são
+       as do próprio aplicativo, servidas da mesma pasta.
+    2. Nenhuma imagem é desenho de marketing. Toda tela mostrada é captura do
+       aplicativo inteiro, com o projeto de vitrine aberto
+       (`test/retratos_do_produto/`). Mudou a tela? Rode os retratos de novo.
+    3. Toda promessa tem `data-promessa`, e
+       `test/core/o_site_cumpre_o_que_promete_test.dart` confere cada uma
+       contra o código. Promessa sem prova reprova a suíte.
+
+    ⚠️ AS TRÊS PORTAS QUE PULAM A APRESENTAÇÃO — e a terceira já custou um login
+
+    1. Quem já entrou uma vez neste navegador (`canvasJaEntrou`) vai direto.
+       É o pedido dele: "quando a pessoa entrar de novo já vai direto para a
+       página de login".
+    2. `?app=1` (ou `#app`) força o aplicativo — atalho para teste.
+    3. 🔴 A VOLTA DO LOGIN. O Google e o Supabase devolvem a pessoa para este
+       mesmo endereço com `code=`, `access_token=` ou `error_description=` na
+       URL. Se a apresentação aparecesse nessa hora, o aplicativo nunca
+       receberia a resposta e o login morreria na porta — sem mensagem nenhuma.
+       Por isso a checagem de `voltandoDoLogin()` roda ANTES de tudo.
+
+    Para VER a apresentação de novo depois de já ter entrado: `?cartao=1`.
+
+    🔁 COMO EVOLUIR SEM REFAZER (a base para os planos e a IA que vêm aí)
+    · Texto e seções moram aqui, em português, sem framework: trocar uma frase
+      é trocar uma frase.
+    · As capturas saem dos retratos (`web/capturas/`), os endereços dos
+      instaladores de `downloads.json` (escrito pelo `tool/empacotar.ps1`).
+    · O pedido de convite vai para a função `convites` do Supabase — a mesma
+      que o aplicativo usa. Planos pagos e a IA entram como novas seções e
+      novos `data-promessa`, com prova no código antes de aparecerem aqui.
+  -->
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Canvas Infinito — o quadro sem fim das ideias, o fluxo dos projetos, Kanban, Agenda, Notas, Tarefas, o dinheiro do negócio, os arquivos e a conversa da equipe, num aplicativo só. Funciona sem internet. Windows, Android e navegador. Beta fechado, por convite.">
+  <!--
+    5.1.0 - UMA COR DE MARCA, E OS DOIS ESQUEMAS.
+    Estes valores vem de `AppColors`: `d2CanvasBg` e `l2CanvasBg`. A guarda
+    `test/core/a_cor_da_marca_e_uma_test.dart` compara os tres arquivos.
+  -->
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFFFFF">
+
+  <!-- Quando o link for colado no WhatsApp, no e-mail ou numa rede. -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Canvas Infinito">
+  <meta property="og:description" content="Pense solto. Trabalhe organizado. Nove apps num só lugar — e funciona sem internet. Beta fechado, por convite.">
+  <meta property="og:image" content="icons/Icon-512.png">
+  <meta name="twitter:card" content="summary">
+
+  <!-- PWA / iOS -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Canvas Infinito">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <title>Canvas Infinito — pense solto, trabalhe organizado</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    /*
+      As fontes do PRÓPRIO aplicativo, da mesma pasta (o Flutter copia os
+      arquivos de `assets/fonts` para `assets/assets/fonts`). Enquanto chegam,
+      o texto já aparece na fonte do sistema (`swap`).
+    */
+    @font-face {
+      font-family: "Bricolage";
+      src: url("assets/assets/fonts/BricolageGrotesque-Variable.ttf") format("truetype");
+      font-weight: 200 800;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "CanvasMono";
+      src: url("assets/assets/fonts/JetBrainsMono-Variable.ttf") format("truetype");
+      font-weight: 100 800;
+      font-display: swap;
+    }
+
+    /*
+      As cores são as MESMAS da pele do aplicativo (`lib/core/pele/oficina.dart`):
+      noite pessoal aqui, dia pessoal no esquema claro. A guarda
+      `o_cartao_de_visita_test.dart` compara --criar, --fundo, --texto e --borda.
+    */
+    :root {
+      --fundo:        #000000; /* noitePessoal.chao      */
+      --superficie:   #000000; /* noitePessoal.papel     */
+      --superficie2:  #1A1A1A; /* noitePessoal.papelAlto */
+      --texto:        #FFFFFF; /* noitePessoal.tinta     */
+      --texto2:       #B0B0B0; /* noitePessoal.tinta2    */
+      --texto3:       #848484; /* noitePessoal.tinta3    */
+      --borda:        #3F3F3F; /* noitePessoal.traco     */
+      --criar:        #3E91EF; /* noitePessoal.acento    */
+      --sobre-acento: #000000; /* noitePessoal.sobreAcento */
+      --corp:         #DE0295; /* noiteCorporativo.acento */
+      --liga:         #19D46B; /* a linha verde do canvas */
+      --ponto:        rgba(255, 255, 255, 0.10);
+      --sombra:       0 0 0 1px var(--borda);
+      --acento:       var(--criar);
+      --raio:         20px;
+      --raio-p:       12px;
+      --letra-titulo: "Bricolage", "Segoe UI", system-ui, sans-serif;
+      --letra-texto:  "Inter", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+      --letra-dado:   "CanvasMono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --fundo:        #FFFFFF; /* diaPessoal.chao      */
+        --superficie:   #FFFFFF; /* diaPessoal.papel     */
+        --superficie2:  #FFFFFF; /* diaPessoal.papelAlto */
+        --texto:        #000000; /* diaPessoal.tinta     */
+        --texto2:       #505050; /* diaPessoal.tinta2    */
+        --texto3:       #747474; /* diaPessoal.tinta3    */
+        --borda:        #B8B8B8; /* diaPessoal.traco     */
+        --criar:        #0E61C0; /* diaPessoal.acento    */
+        --sobre-acento: #FFFFFF; /* diaPessoal.sobreAcento */
+        --corp:         #8D015A; /* diaCorporativo.acento */
+        --liga:         #0A8F45;
+        --ponto:        rgba(0, 0, 0, 0.12);
+        --sombra:       0 1px 2px rgba(0,0,0,.06), 0 8px 28px rgba(0,0,0,.08);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background-color: var(--fundo);
+      background-image: radial-gradient(var(--ponto) 1.1px, transparent 1.2px);
+      background-size: 26px 26px;
+      background-position: 0 var(--deslize, 0px);
+      color: var(--texto);
+      font-family: var(--letra-texto);
+      font-size: 17px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; border-radius: 8px; }
+    h1, h2, h3 { font-family: var(--letra-titulo); text-wrap: balance; margin: 0; letter-spacing: -0.02em; }
+    p { margin: 0; }
+    .envelope { width: min(1180px, 100% - 32px); margin-inline: auto; }
+    .rotulo {
+      font-family: var(--letra-dado); font-size: 12.5px; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--texto3);
+    }
+
+    /* ── botões: o que se toca é cápsula (a regra da Oficina) ─────────── */
+    .botao {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      min-height: 50px; padding: 0 24px; border-radius: 999px;
+      font: 600 16px/1 var(--letra-texto); text-decoration: none; cursor: pointer;
+      border: 1px solid transparent; transition: transform .15s ease, background .2s ease, border-color .2s ease;
+    }
+    .botao:active { transform: scale(.98); }
+    .botao-cheio { background: var(--acento); color: var(--sobre-acento); }
+    .botao-cheio:hover { filter: brightness(1.08); }
+    .botao-vazio { background: transparent; color: var(--texto); border-color: var(--borda); }
+    .botao-vazio:hover { border-color: var(--texto2); }
+    .botao-limpo { background: transparent; color: var(--texto); padding: 0 14px; }
+    .botao-limpo:hover { color: var(--acento); }
+    .botao[disabled] { opacity: .6; cursor: wait; }
+
+    /* ── a faixa do topo ─────────────────────────────────────────────── */
+    .faixa {
+      position: sticky; top: 0; z-index: 2;
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      background: color-mix(in srgb, var(--fundo) 78%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--borda) 55%, transparent);
+    }
+    .faixa .envelope { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 64px; }
+    .nome { display: flex; align-items: center; gap: 10px; font: 700 17px/1 var(--letra-titulo); text-decoration: none; }
+    .nome svg { width: 30px; height: 30px; }
+    .nome .massa { fill: var(--acento); }
+    .selo-beta {
+      font: 600 11px/1 var(--letra-dado); letter-spacing: .06em; padding: 5px 8px; border-radius: 999px;
+      color: var(--texto2); border: 1px solid var(--borda);
+    }
+    .menu { display: flex; align-items: center; gap: 4px; }
+    .menu a { font-size: 15px; color: var(--texto2); text-decoration: none; padding: 8px 12px; border-radius: 999px; }
+    .menu a:hover { color: var(--texto); }
+    @media (max-width: 900px) { .menu .some-no-celular { display: none; } }
+
+    /* ── o trilho: a linha verde que liga uma seção à outra ───────────── */
+    .trilho {
+      position: fixed; left: max(12px, calc((100vw - 1180px) / 2 - 36px)); top: 0; bottom: 0; width: 2px; z-index: 0;
+      background: color-mix(in srgb, var(--borda) 50%, transparent);
+      pointer-events: none;
+    }
+    .trilho i { display: block; width: 100%; height: var(--andou, 0%); background: var(--liga); transition: height .1s linear; }
+    @media (max-width: 1260px) { .trilho { display: none; } }
+
+    main { position: relative; z-index: 1; }
+    section { padding: 96px 0; }
+    .porta {
+      display: inline-flex; align-items: center; gap: 10px; margin-bottom: 18px;
+    }
+    .porta::before {
+      content: ""; width: 12px; height: 12px; border-radius: 50%;
+      background: var(--fundo); border: 2px solid var(--liga);
+    }
+    h2 { font-size: clamp(32px, 4.2vw, 52px); line-height: 1.06; font-weight: 700; max-width: 18ch; }
+    .sub { color: var(--texto2); font-size: 18.5px; max-width: 62ch; margin-top: 16px; }
+
+    /* ── o herói ─────────────────────────────────────────────────────── */
+    .heroi { padding: 72px 0 40px; }
+    .heroi .envelope { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 48px; align-items: center; }
+    @media (max-width: 980px) { .heroi .envelope { grid-template-columns: 1fr; } }
+    .etiqueta {
+      display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 999px;
+      border: 1px solid var(--borda); color: var(--texto2); font-size: 14px; background: var(--fundo);
+    }
+    .etiqueta .ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--liga); box-shadow: 0 0 0 4px color-mix(in srgb, var(--liga) 25%, transparent); }
+    h1 {
+      font-size: clamp(44px, 6.6vw, 86px); line-height: .98; font-weight: 750; margin-top: 22px;
+      letter-spacing: -0.035em;
+    }
+    h1 em { font-style: normal; color: var(--acento); }
+    .chamada { color: var(--texto2); font-size: 19.5px; max-width: 54ch; margin-top: 22px; }
+    .acoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .baixar-rapido { margin-top: 18px; color: var(--texto3); font-size: 15px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+    .baixar-rapido button { all: unset; cursor: pointer; color: var(--texto2); text-decoration: underline; text-underline-offset: 3px; }
+    .baixar-rapido button:hover { color: var(--texto); }
+    .recado {
+      display: none; margin-top: 16px; padding: 14px 16px; border-radius: var(--raio-p);
+      border: 1px solid var(--borda); background: var(--superficie2); color: var(--texto2); font-size: 15px; max-width: 60ch;
+    }
+    .recado.visivel { display: block; }
+    .recado code { font-family: var(--letra-dado); font-size: 13px; color: var(--texto); }
+
+    /* ── o palco: um canvas de verdade, animado ──────────────────────── */
+    .palco-moldura {
+      position: relative; border-radius: 26px; border: 1px solid var(--borda);
+      background: var(--superficie); box-shadow: var(--sombra); overflow: hidden;
+      aspect-ratio: 560 / 470;
+    }
+    .palco-moldura .barra {
+      position: absolute; inset: 0 0 auto 0; height: 44px; display: flex; align-items: center; gap: 10px;
+      padding: 0 14px; border-bottom: 1px solid var(--borda); background: var(--superficie2); z-index: 3;
+      font-size: 13.5px; color: var(--texto2);
+    }
+    .palco-moldura .barra img { width: 22px; height: 22px; border-radius: 6px; }
+    .palco-moldura .barra .org {
+      margin-left: auto; font: 600 12.5px/1 var(--letra-texto); color: #fff; background: #1E6FD9;
+      padding: 7px 12px; border-radius: 999px; transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .palco-moldura .barra .org.pulsa { transform: scale(1.08); box-shadow: 0 0 0 6px color-mix(in srgb, #1E6FD9 30%, transparent); }
+    .palco {
+      position: absolute; left: 0; top: 44px; width: 560px; height: 426px; transform-origin: 0 0;
+      background-image: radial-gradient(var(--ponto) 1.1px, transparent 1.2px); background-size: 22px 22px;
+    }
+    .palco svg.fios { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .palco svg.fios path { fill: none; stroke: var(--liga); stroke-width: 2.4; stroke-linecap: round; }
+    .balao {
+      position: absolute; display: grid; align-content: center; gap: 4px; padding: 10px 14px;
+      border: 2px solid; border-radius: 14px; font-size: 13px; line-height: 1.25;
+      opacity: 0; transform: scale(.82); transition: opacity .35s ease, transform .45s cubic-bezier(.2,.9,.3,1.25);
+    }
+    .balao.aparece { opacity: 1; transform: scale(1); }
+    .balao b { font: 700 15px/1.2 var(--letra-titulo); color: var(--texto); }
+    .balao .chip {
+      justify-self: start; font: 700 10px/1 var(--letra-dado); letter-spacing: .06em; padding: 4px 7px; border-radius: 999px;
+    }
+    .balao .data { font: 500 11.5px/1 var(--letra-dado); color: var(--texto2); }
+    .balao .feito { display: inline-block; width: 15px; height: 15px; margin-left: 6px; vertical-align: -2px; opacity: 0; transition: opacity .3s; }
+    .balao.concluido .feito { opacity: 1; }
+    .balao.concluido b { text-decoration: line-through; text-decoration-thickness: 2px; }
+    .balao.inicio { border-radius: 999px; text-align: center; justify-items: center; border-color: #4E9A78; background: color-mix(in srgb, #2E7D5B 22%, var(--superficie)); }
+    .balao.inicio .chip { background: color-mix(in srgb, #2E7D5B 35%, transparent); color: var(--texto); justify-self: center; }
+    .balao.etapa { border-color: #3D7BD9; background: color-mix(in srgb, #1E5BB8 16%, var(--superficie)); }
+    .balao.etapa .chip { background: color-mix(in srgb, #1E5BB8 30%, transparent); color: var(--texto); }
+    .balao.decisao {
+      border: none; background: none; text-align: center; justify-items: center; padding: 0;
+    }
+    .balao.decisao::before {
+      content: ""; position: absolute; inset: 0; z-index: -1;
+      clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+      background: #8A6E2F;
+    }
+    .balao.decisao::after {
+      content: ""; position: absolute; inset: 2px; z-index: -1;
+      clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+      background: color-mix(in srgb, #8A6E2F 22%, var(--superficie));
+    }
+    .balao.decisao .chip { background: color-mix(in srgb, #8A6E2F 40%, transparent); color: var(--texto); justify-self: center; }
+    .cursor {
+      position: absolute; width: 22px; height: 22px; border-radius: 50%; z-index: 4;
+      background: color-mix(in srgb, var(--texto) 18%, transparent); border: 2px solid var(--texto);
+      left: 0; top: 0; transform: translate(260px, 200px); opacity: 0;
+      transition: transform .7s cubic-bezier(.4,.0,.2,1), opacity .3s ease;
+    }
+    .cursor.toca::after {
+      content: ""; position: absolute; inset: -12px; border-radius: 50%; border: 2px solid var(--acento);
+      animation: toque .45s ease-out 2;
+    }
+    @keyframes toque { from { transform: scale(.4); opacity: 1; } to { transform: scale(1.4); opacity: 0; } }
+    .legenda-palco { margin-top: 14px; font-size: 14.5px; color: var(--texto3); min-height: 1.6em; }
+    .legenda-palco b { color: var(--texto2); font-weight: 600; }
+
+    /* ── os nove apps ────────────────────────────────────────────────── */
+    .apps-grade { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.25fr); gap: 40px; margin-top: 44px; align-items: start; }
+    @media (max-width: 980px) { .apps-grade { grid-template-columns: 1fr; } }
+    .apps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .app {
+      all: unset; cursor: pointer; display: grid; justify-items: center; gap: 8px; text-align: center;
+      padding: 14px 6px 12px; border-radius: 18px; border: 1px solid transparent; transition: background .2s, border-color .2s;
+    }
+    .app:hover { background: color-mix(in srgb, var(--texto) 5%, transparent); }
+    .app[aria-pressed="true"] { border-color: var(--borda); background: var(--superficie2); }
+    .app picture, .app img { width: 64px; height: 64px; border-radius: 15px; }
+    .app span { font: 600 14.5px/1.2 var(--letra-texto); }
+    .app-explica { margin-top: 18px; padding: 18px 20px; border-radius: var(--raio); border: 1px solid var(--borda); background: var(--superficie2); }
+    .app-explica h3 { font-size: 22px; }
+    .app-explica p { color: var(--texto2); margin-top: 8px; font-size: 16px; }
+
+    .janela {
+      border-radius: 18px; border: 1px solid var(--borda); background: var(--superficie);
+      box-shadow: var(--sombra); overflow: hidden;
+    }
+    .janela .topo {
+      display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px;
+      border-bottom: 1px solid var(--borda); background: var(--superficie2); font-size: 13px; color: var(--texto2);
+    }
+    .janela .topo .bolinha { width: 9px; height: 9px; border-radius: 50%; background: var(--borda); }
+    .janela img { width: 100%; height: auto; aspect-ratio: 1440 / 900; object-fit: cover; object-position: top left; transition: opacity .35s ease; }
+    .janela img.troca { opacity: .25; }
+    .prova { margin-top: 12px; font-size: 14px; color: var(--texto3); display: flex; gap: 8px; align-items: center; }
+    .prova::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--liga); }
+
+    /* ── celulares ───────────────────────────────────────────────────── */
+    .celulares { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin-top: 40px; }
+    @media (max-width: 860px) { .celulares { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .celular {
+      border-radius: 30px; border: 1px solid var(--borda); padding: 8px; background: var(--superficie2); box-shadow: var(--sombra);
+    }
+    .celular img { border-radius: 23px; aspect-ratio: 390 / 844; object-fit: cover; width: 100%; height: auto; }
+    .celular figcaption { text-align: center; font-size: 13.5px; color: var(--texto2); padding: 10px 0 4px; }
+    figure { margin: 0; }
+
+    /* ── exemplos ────────────────────────────────────────────────────── */
+    .exemplos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 44px; }
+    @media (max-width: 860px) { .exemplos { grid-template-columns: 1fr; } }
+    .exemplo { padding: 26px; border-radius: var(--raio); border: 1px solid var(--borda); background: var(--superficie2); }
+    .exemplo .quem { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+    .exemplo h3 { font-size: 24px; line-height: 1.15; }
+    .exemplo .papel { color: var(--texto3); font-size: 14.5px; }
+    .exemplo .tese { margin-top: 8px; color: var(--texto); font-size: 17px; }
+    .exemplo ol { margin: 16px 0 0; padding: 0; list-style: none; counter-reset: passo; display: grid; gap: 10px; }
+    .exemplo li { counter-increment: passo; display: grid; grid-template-columns: 28px 1fr; gap: 10px; color: var(--texto2); font-size: 15.5px; }
+    .exemplo li::before {
+      content: counter(passo); width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+      font: 600 12.5px/1 var(--letra-dado); color: var(--texto); border: 1px solid var(--borda); background: var(--fundo);
+    }
+    .usa { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+    .usa span { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 5px 10px 5px 5px; border-radius: 999px; border: 1px solid var(--borda); color: var(--texto2); }
+    .usa img { width: 20px; height: 20px; border-radius: 6px; }
+
+    /* ── a Chave ─────────────────────────────────────────────────────── */
+    .chave-sec { --acento: var(--criar); transition: --acento .3s; }
+    .chave-sec[data-lado="corporativo"] { --acento: var(--corp); }
+    .chave-grade { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 44px; align-items: center; margin-top: 36px; }
+    @media (max-width: 980px) { .chave-grade { grid-template-columns: 1fr; } }
+    .a-chave { display: inline-flex; padding: 5px; border-radius: 999px; border: 1px solid var(--borda); background: var(--superficie2); }
+    .a-chave button {
+      all: unset; cursor: pointer; padding: 11px 22px; border-radius: 999px; font: 600 16px/1 var(--letra-texto); color: var(--texto2);
+      transition: background .25s, color .25s;
+    }
+    .a-chave button[aria-pressed="true"] { background: var(--acento); color: #fff; }
+    .chave-texto h3 { font-size: 28px; margin-top: 24px; }
+    .chave-texto p { color: var(--texto2); margin-top: 10px; }
+    .chave-texto ul { margin: 18px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; color: var(--texto2); }
+    .chave-texto li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; }
+    .chave-texto li::before { content: ""; width: 10px; height: 10px; margin-top: 8px; border-radius: 50%; background: var(--acento); }
+
+    /* ── confiança ───────────────────────────────────────────────────── */
+    .confianca { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; margin-top: 44px; background: var(--borda); border: 1px solid var(--borda); border-radius: var(--raio); overflow: hidden; }
+    @media (max-width: 860px) { .confianca { grid-template-columns: 1fr; } }
+    .confianca div { background: var(--superficie); padding: 26px; }
+    .confianca h3 { font-size: 20px; }
+    .confianca p { color: var(--texto2); font-size: 15.5px; margin-top: 8px; }
+
+    /* ── o convite ───────────────────────────────────────────────────── */
+    .convite-grade { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 48px; margin-top: 36px; align-items: start; }
+    @media (max-width: 980px) { .convite-grade { grid-template-columns: 1fr; } }
+    .caminho { margin: 26px 0 0; padding: 0; list-style: none; display: grid; gap: 22px; }
+    .caminho li { display: grid; grid-template-columns: 40px 1fr; gap: 14px; }
+    .caminho .n {
+      width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+      font: 700 15px/1 var(--letra-dado); border: 2px solid var(--liga); color: var(--texto); background: var(--fundo);
+    }
+    .caminho b { display: block; font-size: 17.5px; }
+    .caminho span { color: var(--texto2); font-size: 15.5px; }
+    form.pedido { padding: 28px; border-radius: 24px; border: 1px solid var(--borda); background: var(--superficie2); box-shadow: var(--sombra); }
+    .campo { display: grid; gap: 7px; margin-bottom: 16px; }
+    .campo label { font-weight: 600; font-size: 15px; }
+    .campo .dica { font-size: 13.5px; color: var(--texto3); }
+    .campo input, .campo textarea {
+      width: 100%; font: 16px/1.5 var(--letra-texto); color: var(--texto);
+      background: var(--fundo); border: 1px solid var(--borda); border-radius: 14px; padding: 12px 14px;
+    }
+    .campo textarea { min-height: 96px; resize: vertical; }
+    .campo input:focus, .campo textarea:focus { outline: 2px solid var(--acento); outline-offset: 1px; border-color: transparent; }
+    .duas { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 560px) { .duas { grid-template-columns: 1fr; } }
+    .armadilha { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; }
+    .conta { font: 500 12px/1 var(--letra-dado); color: var(--texto3); justify-self: end; }
+    .conta.ok { color: var(--liga); }
+    .erro-pedido { display: none; margin: 4px 0 14px; color: #E5726A; font-size: 15px; }
+    .erro-pedido.visivel { display: block; }
+    .pronto { display: none; text-align: left; }
+    .pronto.visivel { display: block; }
+    .pronto h3 { font-size: 28px; }
+    .pronto p { color: var(--texto2); margin-top: 10px; }
+    .ja-pediu { display: none; margin-bottom: 18px; padding: 12px 14px; border-radius: 14px; border: 1px dashed var(--borda); color: var(--texto2); font-size: 14.5px; }
+    .ja-pediu.visivel { display: block; }
+
+    /* ── baixar ──────────────────────────────────────────────────────── */
+    .plataformas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 44px; }
+    @media (max-width: 860px) { .plataformas { grid-template-columns: 1fr; } }
+    .plataforma { padding: 26px; border-radius: var(--raio); border: 1px solid var(--borda); background: var(--superficie2); display: grid; gap: 12px; align-content: start; }
+    .plataforma h3 { font-size: 24px; }
+    .plataforma p { color: var(--texto2); font-size: 15.5px; }
+    .plataforma .detalhe { font: 500 12.5px/1.4 var(--letra-dado); color: var(--texto3); min-height: 1.4em; }
+
+    /* ── novidades ───────────────────────────────────────────────────── */
+    .novidades { list-style: none; padding: 0; margin: 36px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    @media (max-width: 860px) { .novidades { grid-template-columns: 1fr; } }
+    .novidades li { background: var(--superficie2); border: 1px solid var(--borda); border-radius: var(--raio-p); padding: 22px 24px; display: grid; gap: 8px; }
+    .novidades .quando { font: 500 12.5px/1.4 var(--letra-dado); color: var(--texto3); letter-spacing: .04em; }
+    .novidades h3 { font-size: 20px; }
+    .novidades p { color: var(--texto2); font-size: 15.5px; }
+
+    /* ── perguntas ───────────────────────────────────────────────────── */
+    .perguntas { margin-top: 36px; border-top: 1px solid var(--borda); max-width: 820px; }
+    details { border-bottom: 1px solid var(--borda); padding: 6px 0; }
+    summary { cursor: pointer; list-style: none; padding: 16px 0; font: 600 19px/1.3 var(--letra-titulo); display: flex; justify-content: space-between; gap: 16px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; font-family: var(--letra-dado); color: var(--texto3); transition: transform .2s; }
+    details[open] summary::after { transform: rotate(45deg); }
+    details p { color: var(--texto2); padding: 0 0 18px; max-width: 64ch; }
+
+    footer { padding: 56px 0 72px; border-top: 1px solid var(--borda); color: var(--texto3); font-size: 14.5px; }
+    footer .envelope { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px; }
+    footer a { color: var(--texto2); }
+
+    /* Entrada das seções: só para quem não pediu menos movimento. */
+    .surge { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+    .surge.visto { opacity: 1; transform: none; }
+
+    /* Enquanto o Flutter acorda */
+    #acordando {
+      position: fixed; inset: 0; z-index: 30;
+      display: none; place-items: center;
+      background: var(--fundo);
+      flex-direction: column; gap: 18px;
+      color: var(--texto2); font-size: 14.5px;
+    }
+    #acordando.visivel { display: grid; }
+    /*
+      🏗️ A MESMA marca que o aplicativo desenha por dentro — o laço do
+      infinito — preenchendo-se do centro para fora. A geometria é a de
+      `MarcaOneUi.canvasInfinito`; a guarda
+      `a_abertura_e_uma_so_em_toda_plataforma` compara os dois desenhos.
+    */
+    .marca { width: 72px; height: 72px; }
+    .marca .apagada { fill: var(--superficie2); }
+    .marca .acesa {
+      fill: var(--criar);
+      clip-path: circle(0% at 50% 50%);
+      animation: enche 1.6s ease-out infinite;
+    }
+    @keyframes enche {
+      0%   { clip-path: circle(0%  at 50% 50%); }
+      70%  { clip-path: circle(75% at 50% 50%); }
+      100% { clip-path: circle(75% at 50% 50%); }
+    }
+
+    /*
+      Quem pediu para o sistema não animar (enjoo, epilepsia, preferência) não
+      recebe animação nenhuma. É a mesma regra do `AppMotion` do aplicativo.
+    */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+      html { scroll-behavior: auto; }
+      .surge { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     A APRESENTAÇÃO
+     ══════════════════════════════════════════════════════════════════════ -->
+<div id="cartao" hidden>
+  <div class="trilho" aria-hidden="true"><i></i></div>
+
+  <header class="faixa">
+    <div class="envelope">
+      <a class="nome" href="?cartao=1" aria-label="Canvas Infinito — início da apresentação">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <defs>
+            <mask id="oLacoTopo">
+              <rect x="1.4" y="5.6" width="11.6" height="12.8" rx="6" fill="#fff"/>
+              <rect x="11" y="5.6" width="11.6" height="12.8" rx="6" fill="#fff"/>
+              <rect x="4.6" y="8.8" width="5.2" height="6.4" rx="2.8" fill="#000"/>
+              <rect x="14.2" y="8.8" width="5.2" height="6.4" rx="2.8" fill="#000"/>
+            </mask>
+          </defs>
+          <rect class="massa" width="24" height="24" mask="url(#oLacoTopo)"/>
+        </svg>
+        Canvas Infinito <span class="selo-beta">BETA</span>
+      </a>
+      <nav class="menu" aria-label="Seções">
+        <a class="some-no-celular" href="#apps">Os apps</a>
+        <a class="some-no-celular" href="#exemplos">Exemplos</a>
+        <a class="some-no-celular" href="#baixar">Baixar</a>
+        <a class="some-no-celular" href="#convite">Pedir convite</a>
+        <button class="botao botao-limpo" data-entrar type="button">Entrar</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ── 1. O herói ─────────────────────────────────────────────────── -->
+    <section class="heroi">
+      <div class="envelope">
+        <div>
+          <span class="etiqueta"><span class="ponto"></span> Beta fechado &middot; entra quem recebe convite</span>
+          <h1>Pense solto.<br><em>Trabalhe organizado.</em></h1>
+          <p class="chamada" data-promessa="nove-apps">
+            O quadro sem fim das ideias, o fluxo dos projetos, o Kanban, a Agenda,
+            as Notas, as Tarefas, o dinheiro do negócio, os arquivos e a conversa
+            com a equipe — num aplicativo só. No computador, no celular e no
+            navegador, e continua funcionando <span data-promessa="sem-internet">sem internet</span>.
+          </p>
+          <div class="acoes">
+            <a class="botao botao-cheio" href="#convite">Pedir meu convite</a>
+            <button class="botao botao-vazio" data-entrar type="button">Já tenho convite — entrar</button>
+          </div>
+          <div class="baixar-rapido">
+            Ou baixe agora:
+            <button data-baixar="windows" type="button">para Windows</button>
+            <button data-baixar="android" type="button">para Android</button>
+          </div>
+          <div class="recado" id="recado-baixar" role="status"></div>
+        </div>
+
+        <div>
+          <div class="palco-moldura" id="palco-moldura">
+            <div class="barra">
+              <picture>
+                <source srcset="capturas/apps/canvas-projetos-claro.webp" media="(prefers-color-scheme: light)">
+                <img src="capturas/apps/canvas-projetos-escuro.webp" alt="" width="22" height="22">
+              </picture>
+              Canvas Projetos &middot; Reforma do 302
+              <span class="org" id="org">Organizar</span>
+            </div>
+            <div class="palco" id="palco" aria-hidden="true">
+              <svg class="fios" viewBox="0 0 560 426" preserveAspectRatio="none">
+                <path id="f1" d="M280 92 L280 130"/>
+                <path id="f2" d="M280 196 L280 226"/>
+                <path id="f3" d="M262 318 C 230 345, 150 340, 130 352"/>
+                <path id="f4" d="M298 318 C 330 345, 410 340, 430 352"/>
+              </svg>
+              <div class="balao inicio" id="b1" style="left:190px;top:22px;width:180px;height:70px">
+                <span class="chip">INÍCIO</span><b>Briefing<svg class="feito" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg></b>
+              </div>
+              <div class="balao etapa" id="b2" style="left:190px;top:130px;width:180px;height:66px">
+                <span class="chip">ETAPA</span><b>Medição<svg class="feito" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg></b>
+                <span class="data">21/10 · 09:00</span>
+              </div>
+              <div class="balao decisao" id="b3" style="left:200px;top:226px;width:160px;height:96px">
+                <span class="chip">DECISÃO</span><b>Aprovar o 3D?</b>
+              </div>
+              <div class="balao etapa" id="b4" style="left:40px;top:352px;width:180px;height:62px">
+                <span class="chip">ETAPA</span><b>Marcenaria</b>
+              </div>
+              <div class="balao etapa" id="b5" style="left:340px;top:352px;width:180px;height:62px">
+                <span class="chip">ETAPA</span><b>Demolição</b>
+              </div>
+              <div class="cursor" id="cursor"></div>
+            </div>
+          </div>
+          <p class="legenda-palco" id="legenda-palco" aria-live="polite">
+            <b>Toque duas vezes</b> no quadro para criar um balão.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 2. Os nove apps ────────────────────────────────────────────── -->
+    <section id="apps">
+      <div class="envelope surge">
+        <span class="porta rotulo">Nove apps, um lugar</span>
+        <h2>Cada um faz bem uma coisa. Todos moram no mesmo projeto.</h2>
+        <p class="sub">
+          Toque num app e veja a tela de verdade. O que você cria em um continua lá
+          quando você abre outro — e um item pode levar ao outro com um toque.
+        </p>
+        <div class="apps-grade">
+          <div>
+            <div class="apps" id="apps-lista" role="group" aria-label="Os apps do Canvas"></div>
+            <div class="app-explica" id="app-explica" aria-live="polite">
+              <h3></h3>
+              <p></p>
+            </div>
+          </div>
+          <div>
+            <div class="janela">
+              <div class="topo"><span class="bolinha"></span><span id="janela-titulo">Canvas Infinito</span></div>
+              <picture id="janela-foto">
+                <source srcset="capturas/vitrine-home-janela-claro.webp" media="(prefers-color-scheme: light)">
+                <img src="capturas/vitrine-home-janela-escuro.webp" alt="A tela inicial do Canvas Infinito com os nove apps" width="1440" height="900" loading="lazy">
+              </picture>
+            </div>
+            <p class="prova">Captura do aplicativo, com um projeto de verdade aberto — não é desenho.</p>
+          </div>
+        </div>
+
+        <div class="celulares">
+          <figure class="celular">
+            <picture>
+              <source srcset="capturas/vitrine-home-celular-claro.webp" media="(prefers-color-scheme: light)">
+              <img src="capturas/vitrine-home-celular-escuro.webp" alt="A tela inicial no celular" width="390" height="844" loading="lazy">
+            </picture>
+            <figcaption>A tela inicial no Android</figcaption>
+          </figure>
+          <figure class="celular">
+            <picture>
+              <source srcset="capturas/vitrine-projetos-celular-claro.webp" media="(prefers-color-scheme: light)">
+              <img src="capturas/vitrine-projetos-celular-escuro.webp" alt="O fluxo da obra no Canvas Projetos, no celular" width="390" height="844" loading="lazy">
+            </picture>
+            <figcaption>O fluxo da obra</figcaption>
+          </figure>
+          <figure class="celular">
+            <picture>
+              <source srcset="capturas/vitrine-kanban-celular-claro.webp" media="(prefers-color-scheme: light)">
+              <img src="capturas/vitrine-kanban-celular-escuro.webp" alt="Os cartões da semana no Kanban, no celular" width="390" height="844" loading="lazy">
+            </picture>
+            <figcaption>Os cartões da semana</figcaption>
+          </figure>
+          <figure class="celular">
+            <picture>
+              <source srcset="capturas/vitrine-agenda-celular-claro.webp" media="(prefers-color-scheme: light)">
+              <img src="capturas/vitrine-agenda-celular-escuro.webp" alt="Os compromissos na Agenda, no celular" width="390" height="844" loading="lazy">
+            </picture>
+            <figcaption>Os compromissos do mês</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3. Exemplos reais ──────────────────────────────────────────── -->
+    <section id="exemplos">
+      <div class="envelope surge">
+        <span class="porta rotulo">Exemplos de verdade</span>
+        <h2>Quatro pessoas, quatro jeitos de usar.</h2>
+        <p class="sub">Não existe jeito certo: o Canvas se ajeita ao trabalho de quem usa. Veja como cada uma faz, passo a passo.</p>
+        <div class="exemplos">
+          <article class="exemplo">
+            <div class="quem"><h3>Marina</h3><span class="papel">designer de interiores</span></div>
+            <p class="tese">Três obras ao mesmo tempo, sem perder um prazo.</p>
+            <ol>
+              <li data-promessa="canvas-projetos">No Canvas Projetos, desenha a obra: briefing, medição, a decisão do 3D, marcenaria e demolição — cada passo com data.</li>
+              <li data-promessa="lembretes">Os compromissos vão para a Agenda, e o aparelho avisa na hora marcada.</li>
+              <li data-promessa="kanban">No Kanban, os cartões da semana andam de A fazer para Feito.</li>
+              <li data-promessa="arquivos-no-drive">Propostas e fotos da obra ficam em Arquivos, guardadas no Google Drive dela.</li>
+            </ol>
+            <div class="usa" data-apps="canvas-projetos agenda kanban arquivos"></div>
+          </article>
+          <article class="exemplo">
+            <div class="quem"><h3>Seu João</h3><span class="papel">dono de mercearia</span></div>
+            <p class="tese">O caderno do fiado virou tela.</p>
+            <ol>
+              <li data-promessa="meu-negocio">Em Finanças, no Meu Negócio, ficam o estoque, as vendas do dia, o caixa e o fiado.</li>
+              <li data-promessa="vencimento">As contas a pagar têm vencimento — e o aviso chega no dia.</li>
+              <li data-promessa="meu-preco">No Meu Preço, descobre por quanto vender cada produto sem se enganar.</li>
+              <li data-promessa="leitor-de-boleto">O boleto chega? Ele aponta a câmera e o app lê o valor e o vencimento.</li>
+            </ol>
+            <div class="usa" data-apps="financas tarefas notas"></div>
+          </article>
+          <article class="exemplo">
+            <div class="quem"><h3>Ana</h3><span class="papel">estudante de engenharia</span></div>
+            <p class="tese">O TCC inteiro num mapa só.</p>
+            <ol>
+              <li data-promessa="canvas-livre">No Canvas Livre, escreve o tema no centro e liga os capítulos ao redor.</li>
+              <li data-promessa="tarefas">As leituras da semana vão para Tarefas, com prazo — e as que se repetem, se repetem sozinhas.</li>
+              <li data-promessa="notas">As anotações das aulas ficam em Notas, com <span data-promessa="corretor">corretor em português e inglês</span>.</li>
+              <li data-promessa="agenda">A banca e as entregas estão na Agenda.</li>
+            </ol>
+            <div class="usa" data-apps="canvas-livre tarefas notas agenda"></div>
+          </article>
+          <article class="exemplo">
+            <div class="quem"><h3>Estúdio Pixel</h3><span class="papel">equipe de quatro pessoas</span></div>
+            <p class="tese">O trabalho da empresa, separado da vida pessoal.</p>
+            <ol>
+              <li data-promessa="pessoal-corporativo">Virando a Chave para Corporativo, criam o projeto da empresa — nada do pessoal aparece ali.</li>
+              <li data-promessa="equipe">Convidam a equipe por e-mail e escolhem quem edita e quem só lê.</li>
+              <li data-promessa="chat">Combinam tudo no Chat, em grupo ou no privado — e decidem numa enquete.</li>
+              <li data-promessa="compartilhar-no-chat">De qualquer app, um item vai para a conversa com um toque, pronto para enviar.</li>
+            </ol>
+            <div class="usa" data-apps="chat kanban arquivos canvas-projetos"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4. Pessoal e Corporativo ───────────────────────────────────── -->
+    <section id="chave" class="chave-sec" data-lado="pessoal">
+      <div class="envelope surge">
+        <span class="porta rotulo">A Chave</span>
+        <h2>Dois lados, uma pessoa.</h2>
+        <div class="chave-grade">
+          <div class="chave-texto" data-promessa="pessoal-corporativo">
+            <div class="a-chave" role="group" aria-label="Escolha o lado">
+              <button type="button" data-lado="pessoal" aria-pressed="true">Pessoal</button>
+              <button type="button" data-lado="corporativo" aria-pressed="false">Corporativo</button>
+            </div>
+            <h3 id="chave-titulo">O que é só seu.</h3>
+            <p id="chave-texto">Suas ideias, suas notas, suas tarefas e o seu dinheiro. Nada daqui aparece no lado da empresa.</p>
+            <ul id="chave-lista">
+              <li>Projetos pessoais, separados do trabalho</li>
+              <li>Meu Dinheiro: contas, cartão, orçamento e metas</li>
+              <li>Uma conta Google sua, com o seu Drive</li>
+            </ul>
+          </div>
+          <div class="janela">
+            <div class="topo"><span class="bolinha"></span><span id="chave-janela">Lado pessoal</span></div>
+            <picture id="chave-foto">
+              <source srcset="capturas/vitrine-home-janela-claro.webp" media="(prefers-color-scheme: light)">
+              <img src="capturas/vitrine-home-janela-escuro.webp" alt="A tela inicial no lado pessoal" width="1440" height="900" loading="lazy">
+            </picture>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 5. Confiança ───────────────────────────────────────────────── -->
+    <section id="confianca">
+      <div class="envelope surge">
+        <span class="porta rotulo">Feito para durar</span>
+        <h2>O seu trabalho fica com você.</h2>
+        <div class="confianca">
+          <div data-promessa="sem-internet">
+            <h3>Funciona sem internet</h3>
+            <p>Tudo é guardado no aparelho primeiro. Quando a rede volta, ele sincroniza sozinho.</p>
+          </div>
+          <div data-promessa="arquivos-no-drive">
+            <h3>Arquivos no seu Google Drive</h3>
+            <p>Anexos e documentos vão para o seu Drive. Dá para ligar mais de uma conta e ver quanto espaço sobra.</p>
+          </div>
+          <div data-promessa="cofre">
+            <h3>Cópias e linha do tempo</h3>
+            <p>Cofre com cópias datadas, lixeira e uma linha do tempo de tudo o que mudou.</p>
+          </div>
+          <div data-promessa="corretor">
+            <h3>Corretor sem internet</h3>
+            <p>Português do Brasil, inglês ou os dois: acento, concordância e sugestão de palavra.</p>
+          </div>
+          <div data-promessa="leitor-de-boleto">
+            <h3>Lê o boleto por você</h3>
+            <p>Aponte a câmera ou anexe o PDF: o app entende o valor, o vencimento e a linha digitável.</p>
+          </div>
+          <div data-promessa="tres-plataformas">
+            <h3>Windows, Android e navegador</h3>
+            <p>O mesmo aplicativo nos três. Com a conta Google, seus aparelhos ficam iguais.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 6. O convite ───────────────────────────────────────────────── -->
+    <section id="convite">
+      <div class="envelope surge">
+        <span class="porta rotulo">Peça o seu convite</span>
+        <h2>Conte quem você é. A gente lê cada pedido.</h2>
+        <div class="convite-grade">
+          <div>
+            <p class="sub" style="margin-top:0" data-promessa="convite">
+              O Canvas está em beta fechado: abrimos aos poucos, para cuidar de
+              cada pessoa que entra. Assim funciona:
+            </p>
+            <ol class="caminho">
+              <li><span class="n">1</span><div><b>Você se apresenta</b><span>Quem é você e por que quer experimentar. Leva dois minutos.</span></div></li>
+              <li><span class="n">2</span><div><b>Uma pessoa lê</b><span>Não é robô: cada pedido é lido pela equipe do Canvas.</span></div></li>
+              <li><span class="n">3</span><div><b>O convite chega por e-mail</b><span>Com o passo a passo para entrar com a sua conta Google.</span></div></li>
+            </ol>
+          </div>
+
+          <form class="pedido" id="pedido" novalidate>
+            <div class="ja-pediu" id="ja-pediu"></div>
+            <div class="duas">
+              <div class="campo">
+                <label for="p-nome">Seu nome</label>
+                <input id="p-nome" name="nome" autocomplete="name" required maxlength="120" placeholder="Como você quer ser chamado">
+              </div>
+              <div class="campo">
+                <label for="p-email">Seu e-mail</label>
+                <input id="p-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="o da conta Google que vai usar" spellcheck="false">
+              </div>
+            </div>
+            <div class="campo">
+              <label for="p-apresentacao">Quem é você?</label>
+              <span class="dica">O que você faz, do que gosta — em poucas linhas.</span>
+              <textarea id="p-apresentacao" name="apresentacao" required maxlength="2000"></textarea>
+              <span class="conta" data-conta="p-apresentacao" data-minimo="20"></span>
+            </div>
+            <div class="campo">
+              <label for="p-motivo">Por que você quer experimentar o Canvas?</label>
+              <span class="dica">O que espera organizar, criar ou resolver com ele.</span>
+              <textarea id="p-motivo" name="motivo" required maxlength="2000"></textarea>
+              <span class="conta" data-conta="p-motivo" data-minimo="10"></span>
+            </div>
+            <div class="duas">
+              <div class="campo">
+                <label for="p-ocupacao">O que você faz <span class="dica">(opcional)</span></label>
+                <input id="p-ocupacao" name="ocupacao" maxlength="120" placeholder="Ex.: designer, dona de loja">
+              </div>
+              <div class="campo">
+                <label for="p-como">Como conheceu <span class="dica">(opcional)</span></label>
+                <input id="p-como" name="comoConheceu" maxlength="200" placeholder="Ex.: um amigo, Instagram">
+              </div>
+            </div>
+            <div class="armadilha" aria-hidden="true">
+              <label for="p-site">Deixe em branco</label>
+              <input id="p-site" name="site" tabindex="-1" autocomplete="off">
+            </div>
+            <p class="erro-pedido" id="erro-pedido" role="alert"></p>
+            <button class="botao botao-cheio" id="enviar-pedido" type="submit">Enviar meu pedido</button>
+            <div class="pronto" id="pedido-pronto" role="status">
+              <h3 id="pronto-titulo">Pedido enviado. Obrigado!</h3>
+              <p id="pronto-texto"></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 7. Baixar ──────────────────────────────────────────────────── -->
+    <section id="baixar">
+      <div class="envelope surge">
+        <span class="porta rotulo">Baixe e comece</span>
+        <h2>No computador, no celular ou aqui mesmo.</h2>
+        <p class="sub">Para entrar você vai precisar do convite. Já pode deixar o app instalado.</p>
+        <div class="plataformas" data-promessa="tres-plataformas">
+          <div class="plataforma">
+            <h3>Windows</h3>
+            <p>Baixe, descompacte e abra o <b>CanvasInfinito.exe</b> — sem instalar nada. Se o Windows avisar que o programa é novo, clique em <b>Mais informações</b> e depois em <b>Executar assim mesmo</b>.</p>
+            <span class="detalhe" data-tamanho="windows"></span>
+            <button class="botao botao-cheio" data-baixar="windows" type="button">Baixar para Windows</button>
+          </div>
+          <div class="plataforma">
+            <h3>Android</h3>
+            <p>Baixe o arquivo no celular, abra e permita a instalação. As próximas versões instalam por cima, sem perder nada.</p>
+            <span class="detalhe" data-tamanho="android"></span>
+            <button class="botao botao-cheio" data-baixar="android" type="button">Baixar para Android</button>
+          </div>
+          <div class="plataforma">
+            <h3>Navegador</h3>
+            <p>Sem baixar nada: entre com a sua conta Google e use aqui mesmo, no computador ou no celular.</p>
+            <span class="detalhe">Chrome, Edge, Firefox e Safari</span>
+            <button class="botao botao-vazio" data-entrar type="button">Entrar pelo navegador</button>
+          </div>
+        </div>
+        <div class="recado" id="recado-plataforma" role="status"></div>
+      </div>
+    </section>
+
+    <!-- ── 7½. Novidades ──────────────────────────────────────────────────
+      Vêm de `novidades.json`, ao lado desta página: só mudança grande, que
+      interessa a quem ainda não usa. Sem o arquivo, a seção não aparece.
+    -->
+    <section id="novidades" hidden>
+      <div class="envelope surge">
+        <span class="porta rotulo">Novidades</span>
+        <h2>O que chegou por último.</h2>
+        <ol class="novidades" id="lista-de-novidades"></ol>
+      </div>
+    </section>
+
+    <!-- ── 8. Perguntas ───────────────────────────────────────────────── -->
+    <section id="perguntas">
+      <div class="envelope surge">
+        <span class="porta rotulo">Perguntas</span>
+        <h2>O que todo mundo pergunta.</h2>
+        <div class="perguntas">
+          <details>
+            <summary>Quanto custa?</summary>
+            <p>Durante o beta, nada. Quem entra agora ajuda a moldar o produto — e cada sugestão é lida.</p>
+          </details>
+          <details>
+            <summary>Preciso de internet?</summary>
+            <p data-promessa="sem-internet">Para entrar pela primeira vez e para sincronizar. Depois, o Canvas funciona inteiro sem rede — e confere o seu acesso quando a internet volta.</p>
+          </details>
+          <details>
+            <summary>Onde ficam os meus dados?</summary>
+            <p data-promessa="arquivos-no-drive">No seu aparelho, primeiro. Os arquivos que você anexa vão para o seu Google Drive. O servidor do Canvas guarda só o necessário para a equipe e o Chat funcionarem.</p>
+          </details>
+          <details>
+            <summary>Dá para usar com a minha equipe?</summary>
+            <p data-promessa="equipe">Sim. No lado Corporativo você cria a empresa, convida por e-mail e escolhe quem edita e quem só lê. A conversa acontece no Chat.</p>
+          </details>
+          <details>
+            <summary>Funciona no iPhone e no Mac?</summary>
+            <p>Ainda não há aplicativo para iPhone e Mac. Neles, use pelo navegador.</p>
+          </details>
+          <details>
+            <summary>Quando abre para todo mundo?</summary>
+            <p>Estamos abrindo aos poucos, por convite, para cuidar de cada pessoa que entra. Peça o seu e você entra na fila.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="envelope">
+      <div>Canvas Infinito &middot; beta fechado, por convite</div>
+      <div>Fale com a gente: <a href="mailto:canvaslivrecontato@gmail.com">canvaslivrecontato@gmail.com</a></div>
+      <div>As telas desta página são capturas do aplicativo.</div>
+    </div>
+  </footer>
+</div>
+
+<!-- Enquanto o aplicativo acorda -->
+<div id="acordando">
+  <!--
+    🎯 A MESMA MARCA QUE O APLICATIVO ABRE, e que o lançador mostra.
+    🔴 Os números vêm de `MarcaOneUi.canvasInfinito`, em
+    `lib/core/pele/marcas_one_ui.dart`, e a guarda
+    `a_abertura_e_uma_so_em_toda_plataforma` compara os dois.
+  -->
+  <svg class="marca" viewBox="0 0 24 24" aria-hidden="true">
+    <defs>
+      <mask id="oLaco">
+        <rect x="1.4" y="5.6" width="11.6" height="12.8" rx="6" fill="#fff"/>
+        <rect x="11" y="5.6" width="11.6" height="12.8" rx="6" fill="#fff"/>
+        <rect x="4.6" y="8.8" width="5.2" height="6.4" rx="2.8" fill="#000"/>
+        <rect x="14.2" y="8.8" width="5.2" height="6.4" rx="2.8" fill="#000"/>
+      </mask>
+    </defs>
+    <rect class="apagada" width="24" height="24" mask="url(#oLaco)"/>
+    <rect class="acesa" width="24" height="24" mask="url(#oLaco)"/>
+  </svg>
+  <div data-frase>Abrindo o Canvas…</div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /*
+    ═════════════════════════════════════════════════════════════════════════
+    OS ENDEREÇOS DOS INSTALADORES
+    ═════════════════════════════════════════════════════════════════════════
+
+    Vêm de `downloads.json`, ao lado desta página — o `tool/empacotar.ps1`
+    escreve os nomes e tamanhos da versão. Sem ele (ou com o arquivo fora do
+    ar), o clique NÃO vira botão morto: abre o recado de como obter.
+
+    🔴 Um `href` vazio ou para lugar nenhum seria pior que não ter botão.
+    Botão que não faz nada ensina a pessoa a não clicar em mais nenhum — é a
+    mesma regra da guarda `botao_que_mente` do aplicativo.
+  */
+  var ENDERECOS = {
+    android: '',
+    windows: ''
+  };
+
+  var COMO_OBTER = {
+    android:
+      'O instalador do Android ainda não está publicado neste endereço. ' +
+      'Peça o arquivo <code>CanvasInfinito-android.apk</code> pelo e-mail ' +
+      '<code>canvaslivrecontato@gmail.com</code>: copie para o celular, abra e ' +
+      'pronto — ele instala por cima da versão anterior sem perder nada.',
+    windows:
+      'O programa para Windows ainda não está publicado neste endereço. ' +
+      'Peça a versão portátil pelo e-mail <code>canvaslivrecontato@gmail.com</code>: ' +
+      'descompacte o <code>-Windows-x64-Portable.zip</code> e abra o ' +
+      '<code>CanvasInfinito.exe</code>. Ou use pelo navegador, aqui mesmo.'
+  };
+
+  var url = new URL(window.location.href);
+  var busca = url.search || '';
+  var pedaco = url.hash || '';
+
+  /*
+    🔴 A VOLTA DO LOGIN — leia o comentário do topo do arquivo antes de mexer.
+    O provedor devolve a pessoa PARA ESTA MESMA PÁGINA com a resposta na URL.
+    Mostrar a apresentação aqui mataria o login em silêncio.
+  */
+  function voltandoDoLogin() {
+    var tudo = busca + pedaco;
+    return /(access_token|refresh_token|[?&#]code=|error_description|type=recovery|provider_token)/.test(tudo);
+  }
+
+  function pediuOCartao() { return /[?&]cartao=1/.test(busca); }
+  function pediuOApp()    { return /[?&]app=1/.test(busca) || pedaco === '#app'; }
+
+  /* Guardar preferência nunca pode derrubar a página (modo privado, cookies
+     bloqueados, iframe com armazenamento negado). */
+  function lembrar(chave, valor) {
+    try { window.localStorage.setItem(chave, valor); } catch (e) { /* sem memória: a apresentação só aparece de novo */ }
+  }
+  function lembrado(chave) {
+    try { return window.localStorage.getItem(chave); } catch (e) { return null; }
+  }
+
+  var CHAVE_JA_ENTROU = 'canvasJaEntrou';
+
+  // ─── Carregar o aplicativo ────────────────────────────────────────────
+
+  var carregando = false;
+
+  function abrirOApp(guardar) {
+    if (carregando) return;
+    carregando = true;
+    if (guardar) lembrar(CHAVE_JA_ENTROU, '1');
+
+    var cartao = document.getElementById('cartao');
+    if (cartao) cartao.hidden = true;
+    var espera = document.getElementById('acordando');
+    if (espera) espera.classList.add('visivel');
+
+    /*
+      🔄 13.7.3 — A VERSÃO NOVA PRIMEIRO (ver `aVersaoNovaPrimeiro`, abaixo).
+      Ela nunca rejeita nem trava: no pior caso devolve no prazo, e o Flutter
+      sobe com o que o navegador guardou.
+    */
+    aVersaoNovaPrimeiro(espera).then(function () { carregarOFlutter(espera); });
+  }
+
+  function carregarOFlutter(espera) {
+    /*
+      🔴 O `flutter_bootstrap.js` é gerado pelo `flutter build web` e some da
+      pasta se alguém trocar o alvo do build. Sem o `onerror`, a falha seria
+      uma tela preta eterna — exatamente o defeito que a 4.41.0 consertou no
+      aplicativo. Aqui ela vira uma frase.
+    */
+    var s = document.createElement('script');
+    s.src = 'flutter_bootstrap.js';
+    s.async = true;
+    s.onerror = function () {
+      if (espera) {
+        espera.innerHTML =
+          '<div style="max-width:420px;text-align:center;padding:0 24px">' +
+          'Não consegui carregar o aplicativo. Recarregue a página; se ' +
+          'continuar, o endereço pode estar servindo uma pasta incompleta.' +
+          '</div>';
+      }
+    };
+    document.body.appendChild(s);
+
+    /*
+      Quando o Flutter pinta, ele insere o próprio elemento no corpo da página.
+      Aí a espera sai da frente. O prazo é uma rede de segurança: se o
+      observador não vir nada em 25 s, a espera vira FRASE.
+    */
+    function flutterNoAr() {
+      return !!document.querySelector('flutter-view, flt-glass-pane, flt-scene-host');
+    }
+    var observador = new MutationObserver(function () {
+      if (!flutterNoAr()) return;
+      observador.disconnect();
+      if (espera) espera.classList.remove('visivel');
+    });
+    observador.observe(document.body, { childList: true, subtree: true });
+    /*
+      🔴 5.0.0 — subiu, a espera sai; não subiu, ela vira **frase**. Roda
+      girando não informa nada.
+    */
+    window.setTimeout(function () {
+      observador.disconnect();
+      if (!espera) return;
+      if (flutterNoAr()) {
+        espera.classList.remove('visivel');
+        return;
+      }
+      espera.innerHTML =
+        '<div style="max-width:460px;text-align:center;padding:0 24px;line-height:1.5">' +
+        'O aplicativo está demorando mais que o normal para abrir. ' +
+        'Recarregue a página; se continuar, tente por outra rede ou ' +
+        'baixe o aplicativo — ele funciona sem internet depois da primeira entrada.' +
+        '<br><br><button class="botao botao-vazio" onclick="window.location.reload()">' +
+        'Recarregar</button>' +
+        '<br><br><a href="?cartao=1" style="color:inherit;opacity:.7;font-size:13px">' +
+        'voltar para a apresentação</a>' +
+        '</div>';
+    }, 25000);
+  }
+
+  // ─── A versão nova primeiro (13.7.3) ─────────────────────────────────
+  /*
+    🔴 O DEFEITO (26/10/2026): publicada a 13.7.2, a aba aberta que recarregava
+    com F5 seguia rodando a 13.7.1 — e o console dizia «Loading from existing
+    service worker». O service worker do Flutter serve o `flutter_bootstrap.js`
+    do CACHE, e é dentro dele que mora o número que o carregador compara com o
+    worker ativo: arquivo velho, número velho, «está em dia». Só ESTA página o
+    worker busca na rede primeiro — por isso a conferência mora aqui, antes do
+    Flutter.
+
+    O que ela faz:
+      1. busca o `flutter_bootstrap.js` POR FORA do worker (`?agora=` não está
+         na lista dele; `?v=` ele corta, por isso não é `?v=`) e lê o
+         `serviceWorkerVersion`;
+      2. o worker ativo já termina com esse número → `em-dia`;
+      3. senão, registra o worker NOVO no MESMO endereço que o carregador do
+         Flutter montaria (`flutter_service_worker.js?v=<número>` sobre o
+         `document.baseURI`) e espera ele assumir → `atualizou`. Aí o
+         `flutter_bootstrap.js` de sempre já sai do cache NOVO, o carregador
+         acha o worker em dia, e o `main.dart.js` é o novo — no PRIMEIRO F5,
+         sem recarga e sem baixar duas vezes.
+
+    🔴 Ela NUNCA recarrega a página — não há laço possível aqui — e não toca no
+    endereço: o `?code=` da volta do login chega intacto ao aplicativo.
+    🔴 Sem rede, ou com o servidor lento, ela desiste no prazo e o Flutter sobe
+    com o que o navegador guardou: o Canvas abre sem internet.
+    O que ela viu fica em `<html data-versao-na-porta>`; o aplicativo lê
+    (`lib/core/a_versao_da_web.dart`) e só pergunta ao servidor quando a porta
+    não confirmou. A guarda é `a_versao_nova_chega_no_primeiro_f5`.
+  */
+  var PRAZO_PARA_PERGUNTAR = 2500;  // ms — buscar o bootstrap do servidor
+  var PRAZO_PARA_INSTALAR = 20000;  // ms — o worker novo baixar ~10 MB e assumir
+
+  function dizerAPorta(estado) {
+    try { document.documentElement.setAttribute('data-versao-na-porta', estado); } catch (e) { /* sem DOM, não há a quem dizer */ }
+  }
+
+  function comPrazo(promessa, ms) {
+    return new Promise(function (resolve, rejeita) {
+      var t = window.setTimeout(function () { rejeita(new Error('prazo')); }, ms);
+      promessa.then(
+        function (v) { window.clearTimeout(t); resolve(v); },
+        function (e) { window.clearTimeout(t); rejeita(e); });
+    });
+  }
+
+  function esperarAssumir(worker) {
+    return new Promise(function (resolve, rejeita) {
+      function ver() {
+        if (worker.state === 'activated') resolve();
+        else if (worker.state === 'redundant') rejeita(new Error('o worker novo não instalou'));
+      }
+      worker.addEventListener('statechange', ver);
+      ver();
+    });
+  }
+
+  // A espera vira frase: quem está olhando sabe que chegou coisa nova.
+  function contarQueChegou(espera) {
+    var frase = espera && espera.querySelector('[data-frase]');
+    if (!frase) return;
+    frase.textContent = 'Chegou uma versão nova do Canvas. Preparando…';
+    fetch(new URL('version.json?agora=' + Date.now(), document.baseURI).toString(), { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (j && j.version) frase.textContent = 'Chegou a versão ' + j.version + ' do Canvas. Preparando…';
+      })
+      .catch(function () { /* a frase sem número já diz o que está acontecendo */ });
+  }
+
+  function aVersaoNovaPrimeiro(espera) {
+    if (!('serviceWorker' in navigator) || !window.fetch) {
+      dizerAPorta('sem-worker');
+      return Promise.resolve();
+    }
+    var conferencia = navigator.serviceWorker.getRegistration().then(function (reg) {
+      if (!reg || !reg.active) { dizerAPorta('sem-worker'); return; }
+      var ativo = reg.active;
+      var doServidor = new URL('flutter_bootstrap.js?agora=' + Date.now(), document.baseURI).toString();
+      return comPrazo(fetch(doServidor, { cache: 'no-store' }), PRAZO_PARA_PERGUNTAR)
+        .then(function (r) {
+          if (!r.ok) throw new Error('o servidor devolveu ' + r.status);
+          return r.text();
+        })
+        .then(function (texto) {
+          var achado = /serviceWorkerVersion:\s*"([^"]+)"/.exec(texto);
+          if (!achado) throw new Error('o flutter_bootstrap.js não diz o serviceWorkerVersion');
+          var novo = achado[1];
+          if (ativo.scriptURL.endsWith(novo)) { dizerAPorta('em-dia'); return; }
+          console.info('Canvas: versão nova no servidor (worker ' + novo + '; esta aba tinha ' +
+            ativo.scriptURL.split('?v=').pop() + '). Instalando antes de abrir.');
+          contarQueChegou(espera);
+          var endereco = new URL('flutter_service_worker.js?v=' + novo, document.baseURI).toString();
+          var instalando = navigator.serviceWorker.register(endereco).then(function (r) {
+            var chegando = r.installing || r.waiting;
+            return chegando ? esperarAssumir(chegando) : undefined;
+          });
+          return comPrazo(instalando, PRAZO_PARA_INSTALAR).then(function () {
+            dizerAPorta('atualizou');
+            console.info('Canvas: versão nova instalada; abrindo.');
+          });
+        });
+    });
+    // A rede de fora: nem um `getRegistration` que nunca responde segura a porta.
+    return comPrazo(conferencia, PRAZO_PARA_PERGUNTAR + PRAZO_PARA_INSTALAR + 2000)
+      .catch(function (e) {
+        var motivo = (e && e.message) || String(e);
+        dizerAPorta(motivo === 'prazo' ? 'demorou' : 'falhou');
+        console.warn('Canvas: não deu para conferir a versão antes de abrir (' + motivo +
+          '); abrindo a que o navegador guardou.');
+      });
+  }
+
+  // ─── Baixar ───────────────────────────────────────────────────────────
+
+  function recadoPerto(botao) {
+    return (botao && botao.closest('#baixar') && document.getElementById('recado-plataforma')) ||
+      document.getElementById('recado-baixar');
+  }
+
+  function explicar(qual, botao) {
+    var alvo = recadoPerto(botao);
+    if (!alvo) return;
+    alvo.innerHTML = COMO_OBTER[qual];
+    alvo.classList.add('visivel');
+    alvo.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  function baixar(qual, botao) {
+    var endereco = ENDERECOS[qual];
+    if (!endereco) { explicar(qual, botao); return; }
+    // Instalador noutro endereço (o Cloudflare Pages não aceita arquivo de
+    // mais de 25 MB): o navegador não deixa conferir sem a permissão do
+    // outro lado, e a conferência recusaria um arquivo que existe.
+    var mesmoLugar = true;
+    try { mesmoLugar = new URL(endereco, window.location.href).origin === window.location.origin; } catch (e) { /* endereço relativo */ }
+    if (!mesmoLugar) { window.location.href = endereco; return; }
+    // Confere que o arquivo está mesmo lá antes de sair da página: um 404
+    // depois do clique é o botão morto com outro nome.
+    fetch(endereco, { method: 'HEAD', cache: 'no-store' })
+      .then(function (r) {
+        if (r.ok) window.location.href = endereco;
+        else explicar(qual, botao);
+      })
+      .catch(function () { explicar(qual, botao); });
+  }
+
+  function lerOsInstaladores() {
+    fetch('downloads.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (!j) return;
+        ['windows', 'android'].forEach(function (q) {
+          var item = j[q];
+          if (!item || !item.url) return;
+          ENDERECOS[q] = item.url;
+          var onde = document.querySelector('[data-tamanho="' + q + '"]');
+          if (onde && item.tamanho) {
+            onde.textContent = 'Versão ' + (j.versao || '') + ' · ' + item.tamanho;
+          }
+        });
+      })
+      .catch(function () { /* sem a lista: o clique explica (COMO_OBTER) */ });
+  }
+
+  // ─── Novidades ────────────────────────────────────────────────────────
+
+  var MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho',
+    'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+
+  function lerAsNovidades() {
+    fetch('novidades.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        var itens = (j && j.novidades) || [];
+        if (itens.length === 0) return;
+        var lista = document.getElementById('lista-de-novidades');
+        itens.slice(0, 4).forEach(function (n) {
+          var li = document.createElement('li');
+          var quando = document.createElement('span');
+          quando.className = 'quando';
+          var d = /^(\d{4})-(\d{2})/.exec(n.data || '');
+          quando.textContent = 'Versão ' + n.versao + (d ? ' · ' + MESES[Number(d[2]) - 1] + ' de ' + d[1] : '');
+          var h = document.createElement('h3');
+          h.textContent = n.titulo;
+          var p = document.createElement('p');
+          p.textContent = n.texto;
+          li.appendChild(quando); li.appendChild(h); li.appendChild(p);
+          lista.appendChild(li);
+        });
+        // Quem a faz surgir é o mesmo observador das outras seções.
+        document.getElementById('novidades').hidden = false;
+      })
+      .catch(function () { /* sem o arquivo: a seção fica escondida */ });
+  }
+
+  // ─── Decidir o que mostrar ────────────────────────────────────────────
+
+  var vaiDiretoParaOApp =
+    voltandoDoLogin() ||
+    pediuOApp() ||
+    (lembrado(CHAVE_JA_ENTROU) === '1' && !pediuOCartao());
+
+  if (vaiDiretoParaOApp) {
+    abrirOApp(false);
+  } else {
+    var cartao = document.getElementById('cartao');
+    if (cartao) cartao.hidden = false;
+    lerOsInstaladores();
+    lerAsNovidades();
+
+    document.addEventListener('click', function (ev) {
+      var alvo = ev.target.closest('[data-entrar], [data-baixar]');
+      if (!alvo) return;
+      ev.preventDefault();
+      if (alvo.hasAttribute('data-entrar')) abrirOApp(true);
+      else baixar(alvo.getAttribute('data-baixar'), alvo);
+    });
+    window.dispatchEvent(new Event('canvas:apresentacao'));
+  }
+
+  // ─── A sentinela de avisos (3.37.0) ───────────────────────────────────
+  //
+  // Registrada aqui, fora do caminho da apresentação, para o service worker
+  // já estar de pé quando o aplicativo pedir os avisos. O escopo é `avisos/`
+  // de propósito: o Flutter registra o worker dele em `/` para funcionar
+  // offline, e um escopo só aceita um worker.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker
+        .register('avisos/sentinela.js', { scope: 'avisos/' })
+        .then(function (reg) {
+          if (!('periodicSync' in reg)) return;
+          return navigator.permissions
+            .query({ name: 'periodic-background-sync' })
+            .then(function (p) {
+              if (p.state !== 'granted') return;
+              return reg.periodicSync.register('canvas-avisos', {
+                minInterval: 15 * 60 * 1000
+              });
+            });
+        })
+        .catch(function () {
+          /* Sem service worker (modo privado, http sem localhost): o app
+             avisa pelo relógio interno enquanto a aba estiver aberta. */
+        });
+    });
+  }
+})();
+</script>
+
+<script>
+/*
+  ═══════════════════════════════════════════════════════════════════════════
+  A APRESENTAÇÃO EM MOVIMENTO — só roda quando a apresentação aparece
+  ═══════════════════════════════════════════════════════════════════════════
+*/
+(function () {
+  'use strict';
+
+  var menosMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var claro = window.matchMedia('(prefers-color-scheme: light)');
+  function tema() { return claro.matches ? 'claro' : 'escuro'; }
+  function espera(ms) { return new Promise(function (r) { window.setTimeout(r, ms); }); }
+
+  var APPS = [
+    { id: 'canvas-livre', nome: 'Canvas Livre', foto: 'livre', promessa: 'canvas-livre',
+      texto: 'Ideias soltas num quadro sem fim. Toque duas vezes e escreva; puxe a bolinha de um balão até o outro para ligar.' },
+    { id: 'canvas-projetos', nome: 'Canvas Projetos', foto: 'projetos', promessa: 'canvas-projetos',
+      texto: 'O fluxo do trabalho — início, etapas, decisões e fim — que diz em que pé está: a etapa da vez, o que já foi feito e o que atrasou. O Organizar arruma o desenho por você.' },
+    { id: 'kanban', nome: 'Kanban', foto: 'kanban', promessa: 'kanban',
+      texto: 'Cartões em colunas — A fazer, Fazendo, Feito — ou o quadro do seu ramo de negócio, com limite para o que está em andamento.' },
+    { id: 'agenda', nome: 'Agenda', foto: 'agenda', promessa: 'agenda',
+      texto: 'Os compromissos no calendário do mês, e o aparelho avisa na hora marcada — mesmo com o app fechado.' },
+    { id: 'notas', nome: 'Notas', foto: 'notas', promessa: 'notas',
+      texto: 'Notas que se leem formatadas — títulos, negrito, listas de marcar, citações —, sem símbolo nenhum no meio do texto. As fixadas ficam no topo, com corretor e previsão de palavra.' },
+    { id: 'tarefas', nome: 'Tarefas', foto: 'tarefas', promessa: 'tarefas',
+      texto: 'A lista do dia, com prazo e hora. As que se repetem voltam sozinhas; as feitas saem da frente.' },
+    { id: 'financas', nome: 'Finanças', foto: 'financas', promessa: 'meu-negocio',
+      texto: 'Meu Negócio (vendas, estoque, caixa e fiado), Meu Dinheiro (contas, cartão e metas), Meu Preço e Meus Serviços.' },
+    { id: 'arquivos', nome: 'Arquivos', foto: 'arquivos', promessa: 'arquivos-no-drive',
+      texto: 'Documentos, fotos e anexos de todos os apps, guardados no seu próprio Google Drive — quantas contas quiser, cada uma com o seu espaço, e você sai de qualquer uma quando quiser.' },
+    { id: 'chat', nome: 'Chat', foto: 'chat', promessa: 'chat',
+      texto: 'Conversa no privado ou em grupo, com fotos, áudio, arquivos e enquetes. Vale para o lado pessoal e para a empresa.' }
+  ];
+  var porId = {};
+  APPS.forEach(function (a) { porId[a.id] = a; });
+
+  function iconeDoApp(id, tamanho) {
+    var p = document.createElement('picture');
+    var s = document.createElement('source');
+    s.srcset = 'capturas/apps/' + id + '-claro.webp';
+    s.media = '(prefers-color-scheme: light)';
+    var i = document.createElement('img');
+    i.src = 'capturas/apps/' + id + '-escuro.webp';
+    i.alt = '';
+    i.width = tamanho; i.height = tamanho;
+    i.loading = 'lazy';
+    p.appendChild(s); p.appendChild(i);
+    return p;
+  }
+
+  function trocarFoto(picture, nome, alt) {
+    var img = picture.querySelector('img');
+    var src = picture.querySelector('source');
+    img.classList.add('troca');
+    window.setTimeout(function () {
+      src.srcset = 'capturas/vitrine-' + nome + '-claro.webp';
+      img.src = 'capturas/vitrine-' + nome + '-escuro.webp';
+      img.alt = alt;
+      img.onload = function () { img.classList.remove('troca'); };
+    }, 160);
+  }
+
+  // ── Os nove apps: escolher mostra a tela de verdade ──────────────────
+  function montarOsApps() {
+    var lista = document.getElementById('apps-lista');
+    var explica = document.getElementById('app-explica');
+    var foto = document.getElementById('janela-foto');
+    var titulo = document.getElementById('janela-titulo');
+    if (!lista) return;
+    var botoes = [];
+    var tocou = false;
+    var atual = 0;
+
+    function escolher(i, peloDedo) {
+      if (peloDedo) tocou = true;
+      atual = i;
+      var a = APPS[i];
+      botoes.forEach(function (b, j) { b.setAttribute('aria-pressed', String(j === i)); });
+      explica.querySelector('h3').textContent = a.nome;
+      explica.querySelector('p').textContent = a.texto;
+      titulo.textContent = 'Canvas Infinito — ' + a.nome;
+      trocarFoto(foto, a.foto + '-janela',
+        a.foto === 'home' ? 'A tela inicial do Canvas Infinito' : 'A tela do ' + a.nome + ' com a reforma do 302 aberta');
+    }
+
+    APPS.forEach(function (a, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'app';
+      b.setAttribute('aria-pressed', 'false');
+      b.setAttribute('data-promessa', a.promessa);
+      b.appendChild(iconeDoApp(a.id, 64));
+      var n = document.createElement('span');
+      n.textContent = a.nome;
+      b.appendChild(n);
+      b.addEventListener('click', function () { escolher(i, true); });
+      lista.appendChild(b);
+      botoes.push(b);
+    });
+    escolher(1, false);
+
+    // Passa sozinho, devagar, enquanto ninguém tocou e a seção está à vista.
+    if (menosMovimento) return;
+    var aVista = false;
+    new IntersectionObserver(function (es) { aVista = es[0].isIntersecting; }, { threshold: .35 })
+      .observe(lista);
+    window.setInterval(function () {
+      if (tocou || !aVista || document.hidden) return;
+      escolher((atual + 1) % 7, false);
+    }, 4200);
+  }
+
+  // ── As fichas dos exemplos: os apps que cada um usa ──────────────────
+  function montarOsUsos() {
+    document.querySelectorAll('.usa[data-apps]').forEach(function (onde) {
+      onde.getAttribute('data-apps').split(' ').forEach(function (id) {
+        var a = porId[id];
+        if (!a) return;
+        var s = document.createElement('span');
+        s.appendChild(iconeDoApp(id, 20));
+        s.appendChild(document.createTextNode(a.nome));
+        onde.appendChild(s);
+      });
+    });
+  }
+
+  // ── A Chave ──────────────────────────────────────────────────────────
+  function montarAChave() {
+    var sec = document.getElementById('chave');
+    if (!sec) return;
+    var LADOS = {
+      pessoal: {
+        titulo: 'O que é só seu.',
+        texto: 'Suas ideias, suas notas, suas tarefas e o seu dinheiro. Nada daqui aparece no lado da empresa.',
+        lista: ['Projetos pessoais, separados do trabalho', 'Meu Dinheiro: contas, cartão, orçamento e metas', 'Uma conta Google sua, com o seu Drive'],
+        foto: 'home-janela', janela: 'Lado pessoal'
+      },
+      corporativo: {
+        titulo: 'O trabalho da empresa.',
+        texto: 'Outra pele, outros projetos, a mesma pessoa. Virou a Chave, o app inteiro muda de lado — e nada se mistura.',
+        lista: ['A empresa, a equipe e quem pode o quê', 'O Chat e os Arquivos do time', 'Se quiser, uma conta Google só da empresa'],
+        foto: 'home-corporativo-janela', janela: 'Lado corporativo'
+      }
+    };
+    sec.querySelectorAll('.a-chave button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var lado = b.getAttribute('data-lado');
+        var d = LADOS[lado];
+        sec.setAttribute('data-lado', lado);
+        sec.querySelectorAll('.a-chave button').forEach(function (o) {
+          o.setAttribute('aria-pressed', String(o === b));
+        });
+        document.getElementById('chave-titulo').textContent = d.titulo;
+        document.getElementById('chave-texto').textContent = d.texto;
+        document.getElementById('chave-janela').textContent = d.janela;
+        var ul = document.getElementById('chave-lista');
+        ul.innerHTML = '';
+        d.lista.forEach(function (t) { var li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+        trocarFoto(document.getElementById('chave-foto'), d.foto, 'A tela inicial no ' + d.janela.toLowerCase());
+      });
+    });
+  }
+
+  // ── O palco: o fluxo da obra nascendo, toque a toque ─────────────────
+  function montarOPalco() {
+    var moldura = document.getElementById('palco-moldura');
+    var palco = document.getElementById('palco');
+    if (!moldura || !palco) return;
+    function caber() {
+      var escala = moldura.clientWidth / 560;
+      palco.style.transform = 'scale(' + escala + ')';
+    }
+    caber();
+    window.addEventListener('resize', caber);
+
+    var cursor = document.getElementById('cursor');
+    var legenda = document.getElementById('legenda-palco');
+    var org = document.getElementById('org');
+    var b = [1, 2, 3, 4, 5].map(function (i) { return document.getElementById('b' + i); });
+    var f = [1, 2, 3, 4].map(function (i) { return document.getElementById('f' + i); });
+    f.forEach(function (p) {
+      var L = p.getTotalLength();
+      p.style.strokeDasharray = L;
+      p.style.strokeDashoffset = L;
+      p.style.transition = 'stroke-dashoffset .7s ease';
+    });
+
+    function tudoPronto() {
+      b.forEach(function (x) { x.classList.add('aparece'); });
+      f.forEach(function (p) { p.style.strokeDashoffset = 0; });
+      b[0].classList.add('concluido'); b[1].classList.add('concluido');
+      legenda.innerHTML = 'O fluxo da obra, com <b>data em cada passo</b>.';
+    }
+    if (menosMovimento) { tudoPronto(); return; }
+
+    function irPara(x, y) { cursor.style.transform = 'translate(' + (x - 11) + 'px,' + (y - 11) + 'px)'; }
+    function tocar() {
+      cursor.classList.remove('toca');
+      void cursor.offsetWidth;
+      cursor.classList.add('toca');
+    }
+    function dizer(html) { legenda.innerHTML = html; }
+
+    async function rodada() {
+      b.forEach(function (x) { x.classList.remove('aparece', 'concluido'); });
+      f.forEach(function (p) { p.style.strokeDashoffset = p.getTotalLength(); });
+      cursor.style.opacity = '1';
+      dizer('<b>Toque duas vezes</b> no quadro para criar um balão.');
+      irPara(280, 57); await espera(800); tocar(); await espera(450);
+      b[0].classList.add('aparece'); await espera(700);
+      dizer('Cada passo da obra vira uma <b>etapa</b>…');
+      irPara(280, 163); await espera(800); tocar(); await espera(450);
+      b[1].classList.add('aparece'); f[0].style.strokeDashoffset = 0; await espera(900);
+      dizer('…e a pergunta que trava tudo vira uma <b>decisão</b>.');
+      irPara(280, 274); await espera(800); tocar(); await espera(450);
+      b[2].classList.add('aparece'); f[1].style.strokeDashoffset = 0; await espera(900);
+      dizer('<b>Puxe a bolinha</b> de um balão até o outro para ligar.');
+      irPara(130, 383); await espera(700); tocar(); await espera(350);
+      b[3].classList.add('aparece'); f[2].style.strokeDashoffset = 0; await espera(600);
+      irPara(430, 383); await espera(700); tocar(); await espera(350);
+      b[4].classList.add('aparece'); f[3].style.strokeDashoffset = 0; await espera(900);
+      dizer('Feito? Marque — e o <b>Organizar</b> arruma o desenho.');
+      irPara(500, -22); await espera(700);
+      org.classList.add('pulsa'); await espera(500); org.classList.remove('pulsa');
+      b[0].classList.add('concluido'); await espera(300); b[1].classList.add('concluido');
+      cursor.style.opacity = '0';
+      await espera(3200);
+    }
+
+    var rodando = false;
+    var aVista = true;
+    new IntersectionObserver(function (es) { aVista = es[0].isIntersecting; }, { threshold: .2 })
+      .observe(moldura);
+    async function laco() {
+      if (rodando) return;
+      rodando = true;
+      // O palco pausa quando ninguém olha: sem gastar bateria de quem rolou
+      // a página ou trocou de aba.
+      for (;;) {
+        while (!aVista || document.hidden) { await espera(600); }
+        await rodada();
+      }
+    }
+    laco();
+  }
+
+  // ── O trilho e as seções que surgem ──────────────────────────────────
+  function montarORolar() {
+    var trilho = document.querySelector('.trilho i');
+    function andar() {
+      var h = document.documentElement;
+      var total = h.scrollHeight - h.clientHeight;
+      var p = total > 0 ? (h.scrollTop / total) * 100 : 0;
+      if (trilho) trilho.style.setProperty('--andou', p.toFixed(1) + '%');
+      if (!menosMovimento) document.body.style.setProperty('--deslize', (-h.scrollTop * 0.12).toFixed(1) + 'px');
+    }
+    window.addEventListener('scroll', andar, { passive: true });
+    andar();
+    if (menosMovimento) {
+      document.querySelectorAll('.surge').forEach(function (s) { s.classList.add('visto'); });
+      return;
+    }
+    var obs = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('visto'); obs.unobserve(e.target); }
+      });
+    }, { threshold: .12 });
+    document.querySelectorAll('.surge').forEach(function (s) { obs.observe(s); });
+  }
+
+  // ── O pedido de convite ──────────────────────────────────────────────
+  /*
+    Vai para a função `convites` do Supabase — a MESMA porta do aplicativo
+    (`lib/services/nuvem/pedidos_de_convite.dart`). O campo `site` é a
+    armadilha para robô: escondido de gente, preenchido por robô.
+  */
+  var FUNCAO = 'https://jezpnlmckokrshwamltg.supabase.co/functions/v1/convites';
+  var RASCUNHO = 'canvasRascunhoDoPedido';
+  var JA_PEDIU = 'canvasPedidoFeito';
+
+  function lerJSON(chave) {
+    try { return JSON.parse(window.localStorage.getItem(chave) || 'null'); } catch (e) { return null; }
+  }
+  function guardarJSON(chave, v) {
+    try {
+      if (v === null) window.localStorage.removeItem(chave);
+      else window.localStorage.setItem(chave, JSON.stringify(v));
+    } catch (e) { /* sem memória: o rascunho só não volta */ }
+  }
+
+  function montarOPedido() {
+    var form = document.getElementById('pedido');
+    if (!form) return;
+    var erro = document.getElementById('erro-pedido');
+    var botao = document.getElementById('enviar-pedido');
+    var pronto = document.getElementById('pedido-pronto');
+    var campos = ['nome', 'email', 'apresentacao', 'motivo', 'ocupacao', 'comoConheceu'];
+
+    // O que já foi digitado volta (o mesmo cuidado do aplicativo: sair no
+    // meio não é desistir).
+    var rascunho = lerJSON(RASCUNHO);
+    if (rascunho) campos.forEach(function (c) { if (rascunho[c] && form.elements[c]) form.elements[c].value = rascunho[c]; });
+    var feito = lerJSON(JA_PEDIU);
+    if (feito && feito.email) {
+      var aviso = document.getElementById('ja-pediu');
+      aviso.textContent = 'Você já pediu um convite com ' + feito.email + ' em ' + feito.quando +
+        '. Se quiser acrescentar algo, envie de novo — o pedido é atualizado.';
+      aviso.classList.add('visivel');
+    }
+
+    function contar() {
+      document.querySelectorAll('[data-conta]').forEach(function (c) {
+        var campo = document.getElementById(c.getAttribute('data-conta'));
+        var min = Number(c.getAttribute('data-minimo'));
+        var n = campo.value.trim().length;
+        c.textContent = n >= min ? 'pronto' : 'mais ' + (min - n) + ' letras';
+        c.classList.toggle('ok', n >= min);
+      });
+    }
+    contar();
+    form.addEventListener('input', function () {
+      contar();
+      erro.classList.remove('visivel');
+      var r = {};
+      campos.forEach(function (c) { r[c] = form.elements[c].value; });
+      guardarJSON(RASCUNHO, r);
+    });
+
+    function falhou(frase) {
+      erro.textContent = frase;
+      erro.classList.add('visivel');
+      botao.disabled = false;
+      botao.textContent = 'Enviar meu pedido';
+    }
+
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var v = {};
+      campos.forEach(function (c) { v[c] = form.elements[c].value.trim(); });
+      var faltas = [];
+      if (v.nome.length < 2) faltas.push('o seu nome');
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.email)) faltas.push('um e-mail válido');
+      if (v.apresentacao.length < 20) faltas.push('quem você é (pelo menos 20 letras)');
+      if (v.motivo.length < 10) faltas.push('por que quer experimentar (pelo menos 10 letras)');
+      if (faltas.length) { falhou('Falta ' + faltas.join(', ') + '.'); return; }
+
+      botao.disabled = true;
+      botao.textContent = 'Enviando…';
+      fetch(FUNCAO, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          acao: 'pedir', nome: v.nome, email: v.email, apresentacao: v.apresentacao,
+          motivo: v.motivo, ocupacao: v.ocupacao, comoConheceu: v.comoConheceu,
+          origem: 'web', site: form.elements.site.value
+        })
+      })
+        .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+        .then(function (j) {
+          if (!j || !j.ok) {
+            var frases = {
+              faltou: 'Faltou preencher algum campo obrigatório.',
+              devagar: 'Você acabou de enviar um pedido. Espere dois minutinhos para mandar de novo.',
+              ocupado: 'Muita gente pedindo ao mesmo tempo. Tente de novo em alguns minutos.'
+            };
+            falhou(frases[j && j.erro] || 'O servidor não conseguiu guardar o pedido agora. Tente de novo em alguns minutos — o que você escreveu continua aqui.');
+            return;
+          }
+          guardarJSON(RASCUNHO, null);
+          var hoje = new Date();
+          guardarJSON(JA_PEDIU, { email: v.email, quando: hoje.toLocaleDateString('pt-BR') });
+          var t = document.getElementById('pronto-titulo');
+          var p = document.getElementById('pronto-texto');
+          if (j.resultado === 'ja_convidado') {
+            t.textContent = 'Você já tem convite!';
+            p.textContent = 'O e-mail ' + v.email + ' já está liberado. É só entrar com a conta Google dele.';
+          } else if (j.resultado === 'atualizado') {
+            t.textContent = 'Pedido atualizado';
+            p.textContent = 'Você já tinha pedido — trocamos pelo texto novo. A resposta chega em ' + v.email + '.';
+          } else {
+            t.textContent = 'Pedido enviado. Obrigado!';
+            p.textContent = 'Cada pedido é lido por uma pessoa da equipe. Assim que o seu acesso for liberado, ' +
+              'você recebe um e-mail em ' + v.email + ' com tudo o que precisa para começar.';
+          }
+          Array.prototype.forEach.call(form.querySelectorAll('.campo, .duas, #enviar-pedido, .ja-pediu, .erro-pedido'), function (el) { el.style.display = 'none'; });
+          pronto.classList.add('visivel');
+        })
+        .catch(function () {
+          falhou('Não deu para falar com o servidor agora. Confira a internet e tente de novo — o que você escreveu continua aqui.');
+        });
+    });
+  }
+
+  function montarTudo() {
+    montarOsApps();
+    montarOsUsos();
+    montarAChave();
+    montarOPalco();
+    montarORolar();
+    montarOPedido();
+  }
+
+  var cartao = document.getElementById('cartao');
+  if (cartao && !cartao.hidden) montarTudo();
+  else window.addEventListener('canvas:apresentacao', montarTudo, { once: true });
+})();
+</script>
+
+</body>
+</html>
