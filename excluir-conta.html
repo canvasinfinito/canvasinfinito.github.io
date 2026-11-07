@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!--
+    🗑️ EXCLUIR A CONTA PELA WEB (14.14.1) — o «link de exclusão» que a Play
+    Store pede, para quem não tem mais o app instalado. Vai à função
+    `convites`, ação `pedir_exclusao` (`docs/nuvem/funcoes/convites/index.ts`).
+    Sem login, o pedido nasce «a confirmar»: o recibo pede que a pessoa
+    responda do próprio e-mail. Sem o servidor, o e-mail é o caminho — nunca
+    um botão que não faz nada.
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFFFFF">
+  <meta name="description" content="Peça a exclusão da sua conta do Canvas Infinito e dos dados guardados no nosso servidor.">
+  <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+  <title>Excluir a conta — Canvas Infinito</title>
+  <link rel="stylesheet" href="documentos.css">
+</head>
+<body>
+  <header class="topo">
+    <a class="marca" href="./?cartao=1">Canvas Infinito</a>
+    <nav><a href="privacidade.html">Privacidade</a><a href="termos.html">Termos de uso</a></nav>
+  </header>
+  <main class="documento">
+    <h1>Excluir a sua conta</h1>
+
+    <p class="resumo">O jeito mais rápido é pelo aplicativo: <b>Conta → Excluir
+    minha conta</b>. Lá o pedido já sai confirmado, porque você está dentro da sua
+    conta. Se não tem mais o app, peça aqui.</p>
+
+    <h2>O que é apagado</h2>
+    <ul>
+      <li>A sua conta e o seu convite.</li>
+      <li>O que está no nosso servidor: a sincronização ao vivo dos seus projetos, as mensagens que você mandou no Chat, as suas pastas e o registro dos seus arquivos.</li>
+      <li>A empresa que você criou: se há outras pessoas nela, ela passa para quem está há mais tempo; se não há, ela é apagada.</li>
+    </ul>
+    <h2>O que continua com você</h2>
+    <ul>
+      <li>Os arquivos no seu Google Drive — eles são seus e ficam no seu Drive.</li>
+      <li>O que está guardado no seu aparelho. Para apagar, desinstale o app ou limpe os dados dele.</li>
+    </ul>
+    <p>O prazo é de até <b>15 dias</b> depois da confirmação.</p>
+
+    <form class="pedido" id="pedido" novalidate>
+      <label for="email">O e-mail da sua conta</label>
+      <input id="email" name="email" type="email" autocomplete="email" required maxlength="254" spellcheck="false" inputmode="email">
+      <label for="motivo">Quer contar o motivo? <span class="dica">(opcional)</span></label>
+      <textarea id="motivo" name="motivo" maxlength="1000"></textarea>
+      <div class="armadilha" aria-hidden="true"><label for="site">Deixe em branco</label><input id="site" name="site" tabindex="-1" autocomplete="off"></div>
+      <p class="erro" id="erro" role="alert"></p>
+      <button type="submit" id="enviar">Pedir a exclusão</button>
+      <p class="pronto" id="pronto" role="status"></p>
+    </form>
+    <p class="dica">Prefere por e-mail? Escreva para
+    <a href="mailto:canvaslivrecontato@gmail.com?subject=Excluir%20minha%20conta">canvaslivrecontato@gmail.com</a>
+    a partir do e-mail da conta.</p>
+  </main>
+  <footer class="rodape">Canvas Infinito · <a href="mailto:canvaslivrecontato@gmail.com">canvaslivrecontato@gmail.com</a></footer>
+  <script>
+  (function () {
+    'use strict';
+    var FUNCAO = 'https://jezpnlmckokrshwamltg.supabase.co/functions/v1/convites';
+    var form = document.getElementById('pedido');
+    var erro = document.getElementById('erro');
+    var pronto = document.getElementById('pronto');
+    var botao = document.getElementById('enviar');
+    function falhou(frase) {
+      erro.textContent = frase;
+      erro.classList.add('visivel');
+      botao.disabled = false;
+      botao.textContent = 'Pedir a exclusão';
+    }
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      erro.classList.remove('visivel');
+      var email = form.elements.email.value.trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { falhou('Escreva o e-mail da sua conta.'); return; }
+      botao.disabled = true;
+      botao.textContent = 'Enviando…';
+      fetch(FUNCAO, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ acao: 'pedir_exclusao', email: email, motivo: form.elements.motivo.value.trim(), origem: 'web', site: form.elements.site.value })
+      })
+        .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+        .then(function (j) {
+          if (!j || !j.ok) {
+            if (j && j.erro === 'devagar') { falhou('Você acabou de pedir. Espere alguns minutos.'); return; }
+            falhou('O pedido não chegou agora. Tente de novo, ou escreva para canvaslivrecontato@gmail.com — vale do mesmo jeito.');
+            return;
+          }
+          form.querySelectorAll('label, input, textarea, button').forEach(function (el) { el.style.display = 'none'; });
+          pronto.textContent = 'Pedido recebido. Mandamos um e-mail para ' + email + ': responda escrevendo CONFIRMO, e em até 15 dias a conta e os dados do servidor são apagados.';
+          pronto.classList.add('visivel');
+        })
+        .catch(function () { falhou('Não deu para falar com o servidor agora. Confira a internet, ou escreva para canvaslivrecontato@gmail.com.'); });
+    });
+  })();
+  </script>
+</body>
+</html>
