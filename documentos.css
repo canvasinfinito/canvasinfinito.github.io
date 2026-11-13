@@ -1,0 +1,59 @@
+/*
+  📄 As páginas de texto do site (privacidade, termos, excluir conta) — 14.14.1.
+  Mesmas cores e letras da apresentação (`index.html`), nada de fora.
+*/
+@font-face { font-family: "Atkinson"; src: url("fontes/atkinson.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+:root {
+  /* 🏺 15.9.0 — Argila: os mesmos valores de `index.html` (noitePessoal). */
+  --fundo: #1F1E1D; --cartao: #302F2C; --texto: #F5F4EE; --texto2: #CFCDC5; --texto3: #ACAAA2;
+  --fio: #45443F; --criar: #D97757; --sobre: #1A1918; --erro: #D67E85; --bom: #98BC85;
+}
+@media (prefers-color-scheme: light) {
+  :root { --fundo: #F5F4EE; --cartao: #FFFFFF; --texto: #1A1918; --texto2: #4E4C47; --texto3: #67655E;
+    --fio: #C4C1B5; --criar: #B0552F; --sobre: #FFFFFF; --erro: #681A23; --bom: #365B28; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fundo); color: var(--texto); font: 17px/1.65 "Atkinson", "Segoe UI", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: var(--criar); }
+.topo { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 10px max(16px, calc((100vw - 760px) / 2)); background: color-mix(in srgb, var(--fundo) 88%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--fio); }
+.topo .marca { font: 700 17px/1 "Atkinson", system-ui, sans-serif; color: var(--texto); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+.topo nav { display: flex; gap: 4px; }
+.topo nav a { color: var(--texto2); text-decoration: none; font-size: 15px; min-height: 44px; display: inline-flex; align-items: center; padding: 0 10px; }
+.topo nav a:hover { color: var(--texto); }
+.documento { width: min(760px, 100% - 32px); margin: 40px auto 56px; }
+h1 { font: 750 clamp(32px, 6vw, 46px)/1.08 "Atkinson", system-ui, sans-serif; letter-spacing: -0.02em; margin: 0; }
+h2 { font: 700 21px/1.25 "Atkinson", system-ui, sans-serif; margin: 36px 0 8px; }
+p, li { color: var(--texto2); }
+b { color: var(--texto); }
+.vigencia { font-size: 14px; color: var(--texto3); margin-top: 8px; }
+.resumo { margin-top: 22px; padding: 18px 20px; border-radius: 18px; background: var(--cartao); border: 1px solid var(--fio); color: var(--texto); }
+ul { padding-left: 22px; }
+li { margin: 6px 0; }
+table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 8px; border-bottom: 1px solid var(--fio); }
+th { color: var(--texto); font-weight: 600; }
+td { color: var(--texto2); }
+@media (max-width: 640px) {
+  table, thead, tbody, tr, th, td { display: block; }
+  thead { display: none; }
+  tr { padding: 12px 0; border-bottom: 1px solid var(--fio); }
+  td { border: 0; padding: 2px 0; }
+  td:first-child { color: var(--texto); font-weight: 600; }
+}
+form.pedido { display: grid; gap: 8px; margin-top: 28px; padding: 22px; border-radius: 22px; background: var(--cartao); border: 1px solid var(--fio); }
+form.pedido label { font-weight: 600; font-size: 15px; margin-top: 6px; }
+form.pedido input, form.pedido textarea { width: 100%; font: 16px/1.5 inherit; font-family: inherit; color: var(--texto); background: var(--fundo); border: 1px solid var(--fio); border-radius: 14px; padding: 13px 14px; }
+form.pedido textarea { min-height: 90px; resize: vertical; }
+form.pedido input:focus, form.pedido textarea:focus { outline: 2px solid var(--criar); outline-offset: 1px; }
+form.pedido button { margin-top: 10px; min-height: 52px; border: 0; border-radius: 999px; font: 600 16px/1 inherit; font-family: inherit; color: var(--sobre); background: var(--criar); cursor: pointer; }
+form.pedido button[disabled] { opacity: .6; cursor: wait; }
+.dica { font-size: 14px; color: var(--texto3); font-weight: 400; }
+.armadilha { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; }
+.erro, .pronto { display: none; margin: 4px 0 0; font-size: 15px; }
+.erro { color: var(--erro); }
+.pronto { color: var(--texto); }
+.erro.visivel, .pronto.visivel { display: block; }
+.rodape { padding: 28px 16px 40px; text-align: center; font-size: 14px; color: var(--texto3); border-top: 1px solid var(--fio); }
+.rodape a { display: inline-block; padding: 12px 0; }

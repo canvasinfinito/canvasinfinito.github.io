@@ -1,0 +1,133 @@
+{
+  "_leia": "As novidades PÚBLICAS do Canvas, mostradas na apresentação (web/index.html, seção Novidades). Só mudança grande, que interessa a quem ainda não usa — o polimento de cada versão fica em kWhatsNew, dentro do app. A mais nova vem primeiro; a página mostra as quatro primeiras. Cada uma cita as promessas da página que ela sustenta, e a régua o_site_cumpre_o_que_promete exige prova no código para cada uma.",
+  "novidades": [
+    {
+      "versao": "15.3.0",
+      "data": "2026-11-08",
+      "titulo": "Cronograma e saldo a liberar",
+      "texto": "O Canvas Projetos mostra cada etapa numa linha do tempo, com as que ditam o prazo em destaque; e a Casa do Dinheiro diz quanto das vendas das plataformas ainda não caiu na conta.",
+      "promessas": [
+        "canvas-projetos",
+        "meu-negocio"
+      ]
+    },
+    {
+      "versao": "14.14.1",
+      "data": "2026-11-03",
+      "titulo": "Cada app com o seu bloco",
+      "texto": "A apresentação ganhou uma seção para cada um dos nove apps, com a tela de verdade, o que ele faz e situações de quem usa no dia a dia — da oficina mecânica à confeiteira.",
+      "promessas": [
+        "nove-apps",
+        "kanban",
+        "notas",
+        "tarefas",
+        "chat"
+      ]
+    },
+    {
+      "versao": "14.14.0",
+      "data": "2026-11-02",
+      "titulo": "O dinheiro do negócio, do balcão ao contador",
+      "texto": "O Finanças tem quatro sistemas separados de propósito: Meu Negócio, com estoque, frente de caixa e fiado; Meu Dinheiro, para a casa; Meus Serviços, que calcula quanto vale a sua hora; e Meu Preço. O boleto e o QR do PIX se leem pela câmera, e o mês vai inteiro para o contador numa planilha só.",
+      "promessas": [
+        "meu-negocio",
+        "meu-dinheiro",
+        "meus-servicos",
+        "leitor-de-pix",
+        "pacote-do-contador"
+      ]
+    },
+    {
+      "versao": "14.14.0",
+      "data": "2026-11-02",
+      "titulo": "Comece no computador, continue no celular",
+      "texto": "Windows, Android e navegador com as mesmas telas. Entre com a conta Google e os seus aparelhos se encontram sozinhos — e, sem internet, tudo continua funcionando.",
+      "promessas": [
+        "tres-plataformas",
+        "sincroniza",
+        "sem-internet"
+      ]
+    },
+    {
+      "versao": "14.11.0",
+      "data": "2026-11-02",
+      "titulo": "O projeto se desenha como projeto",
+      "texto": "No Canvas Projetos cada etapa tem a forma do seu tipo, a decisão abre os dois ramos lado a lado e o Organizar arruma tudo com respiro. Cada fase mostra as etapas e o que fazer agora — e o modo etapa por etapa revela o caminho conforme ele anda, perguntando se deu certo.",
+      "promessas": [
+        "canvas-projetos"
+      ]
+    },
+    {
+      "versao": "14.11.0",
+      "data": "2026-11-02",
+      "titulo": "Escreva aqui, cole em qualquer lugar",
+      "texto": "Nas Notas o negrito aparece negrito, como no Word. Escolha escrever para o WhatsApp, o Instagram, o e-mail ou outros lugares: as ferramentas são as de lá, o que você cola chega com a formatação de onde veio, e o texto sai pronto para colar.",
+      "promessas": [
+        "notas"
+      ]
+    },
+    {
+      "versao": "13.7.0",
+      "data": "2026-10-25",
+      "titulo": "O projeto diz em que pé está",
+      "texto": "No Canvas Projetos, cada etapa mostra se é a da vez, se já foi feita ou se atrasou. Um painel no alto conta o quanto falta e leva você até a etapa atual num toque.",
+      "promessas": [
+        "canvas-projetos"
+      ]
+    },
+    {
+      "versao": "13.7.0",
+      "data": "2026-10-25",
+      "titulo": "Notas que se leem formatadas",
+      "texto": "Título, negrito, listas de marcar e citações aparecem formatados — sem símbolo nenhum no meio do texto enquanto você lê.",
+      "promessas": [
+        "notas"
+      ]
+    },
+    {
+      "versao": "13.7.0",
+      "data": "2026-10-25",
+      "titulo": "Você sai do Drive quando quiser",
+      "texto": "Sair de uma conta do Google Drive corta o acesso do Canvas a ela no Google, em todos os aparelhos. Os arquivos continuam no seu Drive.",
+      "promessas": [
+        "arquivos-no-drive"
+      ]
+    },
+    {
+      "versao": "13.6.0",
+      "data": "2026-10-25",
+      "titulo": "Seus arquivos no seu Google Drive",
+      "texto": "Anexos e documentos vão direto para o seu Drive. Dá para ligar mais de uma conta, dar um nome a cada uma e ver quanto espaço sobra — o Canvas avisa antes de lotar.",
+      "promessas": [
+        "arquivos-no-drive"
+      ]
+    },
+    {
+      "versao": "13.6.0",
+      "data": "2026-10-25",
+      "titulo": "Corretor que funciona sem internet",
+      "texto": "Português do Brasil, inglês ou os dois juntos, com dicionários completos dentro do aplicativo: acento, palavra trocada e sugestão, mesmo no avião.",
+      "promessas": [
+        "corretor"
+      ]
+    },
+    {
+      "versao": "13.6.0",
+      "data": "2026-10-25",
+      "titulo": "O lado corporativo começa num toque",
+      "texto": "Vire a chave para Corporativo e crie o primeiro projeto da empresa na hora. Pessoal e trabalho ficam separados, cada um com os seus projetos.",
+      "promessas": [
+        "pessoal-corporativo"
+      ]
+    },
+    {
+      "versao": "13.6.0",
+      "data": "2026-10-25",
+      "titulo": "Peça o seu convite por aqui",
+      "texto": "Conte quem você é e por que quer experimentar. Cada pedido é lido por uma pessoa, e o convite chega por e-mail com o passo a passo.",
+      "promessas": [
+        "convite"
+      ]
+    }
+  ]
+}
