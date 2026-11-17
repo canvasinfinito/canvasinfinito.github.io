@@ -1,0 +1,11 @@
+{
+    "versao":  "16.2.0",
+    "windows":  {
+                    "url":  "https://github.com/canvasinfinito/canvasinfinito.github.io/releases/download/v16.2.0/Canvok-16.2.0-Windows-x64-Portable.zip",
+                    "tamanho":  "41,2 MB"
+                },
+    "android":  {
+                    "url":  "https://github.com/canvasinfinito/canvasinfinito.github.io/releases/download/v16.2.0/Canvok-16.2.0-android.apk",
+                    "tamanho":  "61,5 MB"
+                }
+}
