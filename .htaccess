@@ -1,0 +1,9 @@
+AddType application/wasm .wasm
+AddType text/javascript .mjs
+AddType application/manifest+json .webmanifest
+AddType application/vnd.android.package-archive .apk
+<IfModule mod_headers.c>
+  <FilesMatch "^(index\.html|flutter_bootstrap\.js|downloads\.json|novidades\.json|flutter_service_worker\.js)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>

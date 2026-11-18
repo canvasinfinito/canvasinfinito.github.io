@@ -1,0 +1,11 @@
+{
+    "versao":  "17.0.0",
+    "windows":  {
+                    "url":  "https://github.com/canvasinfinito/canvasinfinito.github.io/releases/download/v17.0.0/CanvasInfinito-17.0.0-Windows-x64-Portable.zip",
+                    "tamanho":  "38,1 MB"
+                },
+    "android":  {
+                    "url":  "https://github.com/canvasinfinito/canvasinfinito.github.io/releases/download/v17.0.0/CanvasInfinito-17.0.0-android.apk",
+                    "tamanho":  "61,5 MB"
+                }
+}
