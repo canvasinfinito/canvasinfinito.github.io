@@ -1,0 +1,11 @@
+{
+    "versao":  "17.0.3",
+    "windows":  {
+                    "url":  "downloads/CanvasInfinito-17.0.3-Windows-x64-Portable.zip",
+                    "tamanho":  "38,3 MB"
+                },
+    "android":  {
+                    "url":  "downloads/CanvasInfinito-17.0.3-android.apk",
+                    "tamanho":  "61,5 MB"
+                }
+}
