@@ -1,0 +1,243 @@
+{
+  "_leia": "As novidades PÚBLICAS do Canvas Infinito, mostradas na apresentação (web/index.html, seção Novidades). Só mudança grande, que interessa a quem ainda não usa — o polimento de cada versão fica em kWhatsNew, dentro do app. A mais nova vem primeiro; a página mostra as quatro primeiras. Cada uma cita as promessas da página que ela sustenta, e a régua o_site_cumpre_o_que_promete exige prova no código para cada uma.",
+  "novidades": [
+    {
+      "versao": "17.3.0",
+      "data": "2026-11-22",
+      "titulo": "A esteira de quem vende, completa",
+      "texto": "O Teste de produto ganhou o afiliado (link e comissão, com uma régua mínima por venda), o contador das conversas no privado que viram venda e o prazo da esteira com o aviso do balanço. Na Métricas, as comissões do Mercado Livre, da Shopee e do Etsy entram por arquivo, e os vencedores da semana aparecem sozinhos.",
+      "promessas": [
+        "teste-de-produto"
+      ]
+    },
+    {
+      "versao": "17.3.0",
+      "data": "2026-11-22",
+      "titulo": "O dinheiro de fora e o da equipe",
+      "texto": "No Meu Dinheiro, a carteira em dólar diz quanto chegou em reais depois das taxas e avisa o carnê-leão do mês. No Meu Preço, a calculadora de importação faz o custo que chega por unidade, ao lado da conta do Mercado Livre. E o estoque mostra o lote em trânsito e o produto parado, com o desconto que ainda deixa margem.",
+      "promessas": [
+        "meu-dinheiro",
+        "meu-preco",
+        "estoque"
+      ]
+    },
+    {
+      "versao": "17.0.3",
+      "data": "2026-11-21",
+      "titulo": "O nome inteiro, e o ícone maior",
+      "texto": "Na tela inicial do celular cada app mostra o nome inteiro, como no computador: CI Kanban, CI Agenda, CI Finanças. O ícone do Canvas Infinito ficou do maior tamanho que o Android e o Windows deixam.",
+      "promessas": [
+        "doze-apps"
+      ]
+    },
+    {
+      "versao": "17.0.0",
+      "data": "2026-11-18",
+      "titulo": "Canvas Infinito, agora CI8",
+      "texto": "O app voltou ao nome que tem história: Canvas Infinito. A marca nova, o CI8, é um relógio de doze bolinhas com o infinito no meio, e a abertura conta essa história em dois segundos, no preto absoluto. Os doze apps se chamam CI Canvas, CI Notas, CI Finanças e assim por diante.",
+      "promessas": [
+        "canvas-livre"
+      ]
+    },
+    {
+      "versao": "16.2.0",
+      "data": "2026-11-17",
+      "titulo": "A busca do Chat acha tudo",
+      "texto": "A busca do Chat acha a mensagem sem ligar para acento, encontra fotos e arquivos pelo nome e leva direto até ela.",
+      "promessas": [
+        "chat",
+        "canvas-livre"
+      ]
+    },
+    {
+      "versao": "16.1.0",
+      "data": "2026-11-17",
+      "titulo": "Da venda à cobrança",
+      "texto": "O WhatsApp do cliente que deve já abre com o recado de cobrança escrito e o valor certo, a mercadoria passa de uma loja para a outra sem virar perda, e a voz lê dinheiro, quantidades e códigos como se fala.",
+      "promessas": [
+        "caso-real",
+        "clientes",
+        "leitura-em-voz"
+      ]
+    },
+    {
+      "versao": "15.23.0",
+      "data": "2026-11-16",
+      "titulo": "O papel que sai certo",
+      "texto": "O comprovante cancelado diz que foi cancelado, o pedido ao fornecedor leva a condição de pagamento e sai também por e-mail, e todo PDF traz a data e quem emitiu.",
+      "promessas": [
+        "meu-negocio",
+        "estoque"
+      ]
+    },
+    {
+      "versao": "15.22.0",
+      "data": "2026-11-16",
+      "titulo": "O caixa que olha para a frente",
+      "texto": "A Casa do Dinheiro diz quanto você terá em 30, 60 e 90 dias e o próximo passo da sua trilha financeira. O atendimento vira ordem de serviço e aparece na Agenda, e o cliente fiel ganha o mimo na compra certa.",
+      "promessas": [
+        "casa-do-dinheiro",
+        "ordem-de-servico",
+        "meus-servicos"
+      ]
+    },
+    {
+      "versao": "15.21.0",
+      "data": "2026-11-16",
+      "titulo": "Estoque e gaveta sem surpresa",
+      "texto": "O galpão mostra a curva ABC de cada produto, a contagem pode ser às cegas e o fechamento compara o que você contou na gaveta com o que devia ter.",
+      "promessas": [
+        "estoque",
+        "meu-negocio"
+      ]
+    },
+    {
+      "versao": "15.19.0",
+      "data": "2026-11-16",
+      "titulo": "O banco e o fornecedor entram direto",
+      "texto": "O extrato OFX de qualquer banco e a nota fiscal em XML do fornecedor entram nas Finanças pela mesma conferência das planilhas, e toda planilha se abre como um app.",
+      "promessas": [
+        "extrato-e-nota",
+        "meu-dinheiro"
+      ]
+    },
+    {
+      "versao": "15.17.0",
+      "data": "2026-11-15",
+      "titulo": "O app lê para você",
+      "texto": "Notas, documentos e telas são lidos em voz alta com vozes brasileiras, sem internet; a nota guarda foto, vídeo, áudio e PDF no ponto do texto.",
+      "promessas": [
+        "leitura-em-voz",
+        "notas"
+      ]
+    },
+    {
+      "versao": "15.3.0",
+      "data": "2026-11-08",
+      "titulo": "Cronograma e saldo a liberar",
+      "texto": "O Canvas Projetos mostra cada etapa numa linha do tempo, com as que ditam o prazo em destaque; e a Casa do Dinheiro diz quanto das vendas das plataformas ainda não caiu na conta.",
+      "promessas": [
+        "canvas-projetos",
+        "meu-negocio"
+      ]
+    },
+    {
+      "versao": "14.14.1",
+      "data": "2026-11-03",
+      "titulo": "Cada app com o seu bloco",
+      "texto": "A apresentação ganhou uma seção para cada um dos doze apps, com a tela de verdade, o que ele faz e situações de quem usa no dia a dia — da oficina mecânica à confeiteira.",
+      "promessas": [
+        "doze-apps",
+        "kanban",
+        "notas",
+        "tarefas",
+        "chat"
+      ]
+    },
+    {
+      "versao": "14.14.0",
+      "data": "2026-11-02",
+      "titulo": "O dinheiro do negócio, do balcão ao contador",
+      "texto": "O Finanças tem quatro sistemas separados de propósito: Meu Negócio, com estoque, frente de caixa e fiado; Meu Dinheiro, para a casa; Meus Serviços, que calcula quanto vale a sua hora; e Meu Preço. O boleto e o QR do PIX se leem pela câmera, e o mês vai inteiro para o contador numa planilha só.",
+      "promessas": [
+        "meu-negocio",
+        "meu-dinheiro",
+        "meus-servicos",
+        "leitor-de-pix",
+        "pacote-do-contador"
+      ]
+    },
+    {
+      "versao": "14.14.0",
+      "data": "2026-11-02",
+      "titulo": "Comece no computador, continue no celular",
+      "texto": "Windows, Android e navegador com as mesmas telas. Entre com a conta Google e os seus aparelhos se encontram sozinhos — e, sem internet, tudo continua funcionando.",
+      "promessas": [
+        "tres-plataformas",
+        "sincroniza",
+        "sem-internet"
+      ]
+    },
+    {
+      "versao": "14.11.0",
+      "data": "2026-11-02",
+      "titulo": "O projeto se desenha como projeto",
+      "texto": "No Canvas Projetos cada etapa tem a forma do seu tipo, a decisão abre os dois ramos lado a lado e o Organizar arruma tudo com respiro. Cada fase mostra as etapas e o que fazer agora — e o modo etapa por etapa revela o caminho conforme ele anda, perguntando se deu certo.",
+      "promessas": [
+        "canvas-projetos"
+      ]
+    },
+    {
+      "versao": "14.11.0",
+      "data": "2026-11-02",
+      "titulo": "Escreva aqui, cole em qualquer lugar",
+      "texto": "Nas Notas o negrito aparece negrito, como no Word. Escolha escrever para o WhatsApp, o Instagram, o e-mail ou outros lugares: as ferramentas são as de lá, o que você cola chega com a formatação de onde veio, e o texto sai pronto para colar.",
+      "promessas": [
+        "notas"
+      ]
+    },
+    {
+      "versao": "13.7.0",
+      "data": "2026-10-25",
+      "titulo": "O projeto diz em que pé está",
+      "texto": "No Canvas Projetos, cada etapa mostra se é a da vez, se já foi feita ou se atrasou. Um painel no alto conta o quanto falta e leva você até a etapa atual num toque.",
+      "promessas": [
+        "canvas-projetos"
+      ]
+    },
+    {
+      "versao": "13.7.0",
+      "data": "2026-10-25",
+      "titulo": "Notas que se leem formatadas",
+      "texto": "Título, negrito, listas de marcar e citações aparecem formatados — sem símbolo nenhum no meio do texto enquanto você lê.",
+      "promessas": [
+        "notas"
+      ]
+    },
+    {
+      "versao": "13.7.0",
+      "data": "2026-10-25",
+      "titulo": "Você sai do Drive quando quiser",
+      "texto": "Sair de uma conta do Google Drive corta o acesso do Canvas a ela no Google, em todos os aparelhos. Os arquivos continuam no seu Drive.",
+      "promessas": [
+        "arquivos-no-drive"
+      ]
+    },
+    {
+      "versao": "13.6.0",
+      "data": "2026-10-25",
+      "titulo": "Seus arquivos no seu Google Drive",
+      "texto": "Anexos e documentos vão direto para o seu Drive. Dá para ligar mais de uma conta, dar um nome a cada uma e ver quanto espaço sobra — o Canvas avisa antes de lotar.",
+      "promessas": [
+        "arquivos-no-drive"
+      ]
+    },
+    {
+      "versao": "13.6.0",
+      "data": "2026-10-25",
+      "titulo": "Corretor que funciona sem internet",
+      "texto": "Português do Brasil, inglês ou os dois juntos, com dicionários completos dentro do aplicativo: acento, palavra trocada e sugestão, mesmo no avião.",
+      "promessas": [
+        "corretor"
+      ]
+    },
+    {
+      "versao": "13.6.0",
+      "data": "2026-10-25",
+      "titulo": "O lado corporativo começa num toque",
+      "texto": "Vire a chave para Corporativo e crie o primeiro projeto da empresa na hora. Pessoal e trabalho ficam separados, cada um com os seus projetos.",
+      "promessas": [
+        "pessoal-corporativo"
+      ]
+    },
+    {
+      "versao": "13.6.0",
+      "data": "2026-10-25",
+      "titulo": "Peça o seu convite por aqui",
+      "texto": "Conte quem você é e por que quer experimentar. Cada pedido é lido por uma pessoa, e o convite chega por e-mail com o passo a passo.",
+      "promessas": [
+        "convite"
+      ]
+    }
+  ]
+}
