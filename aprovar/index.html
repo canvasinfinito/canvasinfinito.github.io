@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aprovação de publicação · Canvas Infinito</title>
+  <style>
+    :root {
+      --fundo: hsl(36, 30%, 95%);
+      --cartao: hsl(0, 0%, 100%);
+      --borda: hsl(34, 22%, 86%);
+      --tinta: hsl(28, 12%, 14%);
+      --tinta2: hsl(28, 8%, 40%);
+      --acento: hsl(18, 56%, 40%);
+      --verde: hsl(146, 48%, 30%);
+      --aviso: hsl(32, 74%, 34%);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--fundo);
+      color: var(--tinta);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.55;
+      padding: 32px 18px 64px;
+    }
+    .container { max-width: 620px; margin: 0 auto; }
+    .cartao {
+      background: var(--cartao);
+      border: 1px solid var(--borda);
+      border-radius: 16px;
+      padding: 24px 20px;
+      margin-bottom: 16px;
+    }
+    .etiqueta {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 1px solid var(--borda);
+      margin-bottom: 12px;
+    }
+    .etiqueta-pendente { color: var(--aviso); }
+    .etiqueta-aprovado { color: var(--verde); }
+    h1 { margin: 0 0 6px; font-size: 1.5rem; line-height: 1.25; }
+    .oficina { margin: 0 0 16px; color: var(--tinta2); font-size: 0.95rem; }
+    .legenda {
+      white-space: pre-wrap;
+      padding: 16px;
+      border-radius: 12px;
+      background: var(--fundo);
+      border: 1px solid var(--borda);
+      margin: 12px 0;
+    }
+    .midia-lista { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .midia-item {
+      display: block;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--borda);
+      color: var(--acento);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 12px 0 6px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--borda);
+      font: inherit;
+      color: var(--tinta);
+      background: #fff;
+    }
+    .botoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    button {
+      flex: 1 1 200px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .btn-aprovar { background: var(--verde); color: #fff; }
+    .btn-ajuste { background: transparent; border-color: var(--borda); color: var(--tinta); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .regra-48h { font-size: 0.88rem; color: var(--tinta2); margin-top: 12px; }
+    .recado { font-weight: 600; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <main class="container" id="app">
+    <div class="cartao">Carregando publicação para aprovação…</div>
+  </main>
+  <script>
+    (function () {
+      'use strict';
+
+      function urlSegura(crua) {
+        if (typeof crua !== 'string') return false;
+        var limpa = crua.trim().toLowerCase();
+        return (
+          limpa.indexOf('https://') === 0 ||
+          limpa.indexOf('http://') === 0 ||
+          limpa.indexOf('mailto:') === 0 ||
+          limpa.indexOf('tel:') === 0
+        );
+      }
+
+      async function descobrirCredenciaisNuvem() {
+        var busca = new URLSearchParams(window.location.search);
+        var ancora = new URLSearchParams(window.location.hash ? window.location.hash.slice(1) : '');
+        var url = ancora.get('u') || busca.get('u') || '';
+        var chave = ancora.get('k') || busca.get('k') || '';
+
+        if (url && chave) {
+          try {
+            localStorage.setItem('ci8_sb_url', url);
+            localStorage.setItem('ci8_sb_anon', chave);
+          } catch (_) {}
+          return { url: url.replace(/\/+$/, ''), chave: chave };
+        }
+
+        if (window.CI8_NUVEM && window.CI8_NUVEM.url && window.CI8_NUVEM.anonKey) {
+          return {
+            url: String(window.CI8_NUVEM.url).replace(/\/+$/, ''),
+            chave: String(window.CI8_NUVEM.anonKey)
+          };
+        }
+
+        try {
+          var resp = await fetch('../nuvem_config.json', { cache: 'no-store' });
+          if (resp.ok) {
+            var cfg = await resp.json();
+            if (cfg && cfg.supabaseUrl && cfg.supabaseAnonKey) {
+              return {
+                url: String(cfg.supabaseUrl).replace(/\/+$/, ''),
+                chave: String(cfg.supabaseAnonKey)
+              };
+            }
+          }
+        } catch (_) {}
+
+        try {
+          var salvaUrl = localStorage.getItem('ci8_sb_url') || '';
+          var salvaChave = localStorage.getItem('ci8_sb_anon') || '';
+          if (salvaUrl && salvaChave) {
+            return { url: salvaUrl.replace(/\/+$/, ''), chave: salvaChave };
+          }
+        } catch (_) {}
+
+        return null;
+      }
+
+      function resolverSituacaoEfetiva(pedido) {
+        var sit = String(pedido.situacao || 'pendente');
+        if (sit !== 'pendente') return sit;
+        var prazoMs = Date.parse(pedido.prazo_auto_aprovacao_em || '');
+        if (!Number.isNaN(prazoMs) && Date.now() >= prazoMs) {
+          return 'aprovado_automatico_48h';
+        }
+        return 'pendente';
+      }
+
+      function textoContagem48h(pedido) {
+        var prazoMs = Date.parse(pedido.prazo_auto_aprovacao_em || '');
+        if (Number.isNaN(prazoMs)) {
+          return 'Sem resposta em 48 horas, a publicação é aprovada automaticamente.';
+        }
+        var diffMin = Math.max(0, Math.floor((prazoMs - Date.now()) / 60000));
+        var h = Math.floor(diffMin / 60);
+        var m = diffMin % 60;
+        return 'Restam ' + h + 'h ' + m + 'min · sem resposta em 48 horas, a publicação é aprovada automaticamente.';
+      }
+
+      function rotuloSituacao(sit) {
+        if (sit === 'aprovado_cliente') return 'Aprovado pela oficina';
+        if (sit === 'aprovado_automatico_48h') return 'Aprovado automaticamente após 48h sem resposta';
+        if (sit === 'ajuste_pedido') return 'Ajuste solicitado pela oficina';
+        return 'Aguardando aprovação da oficina';
+      }
+
+      function mostrarAvisoSimples(msg) {
+        var app = document.getElementById('app');
+        app.textContent = '';
+        var div = document.createElement('div');
+        div.className = 'cartao';
+        div.textContent = msg;
+        app.appendChild(div);
+      }
+
+      function renderizarPedido(pedido, cred, codigo) {
+        var app = document.getElementById('app');
+        app.textContent = '';
+
+        var sit = resolverSituacaoEfetiva(pedido);
+        var cartao = document.createElement('section');
+        cartao.className = 'cartao';
+
+        var etq = document.createElement('span');
+        etq.className = 'etiqueta ' + (sit === 'pendente' ? 'etiqueta-pendente' : 'etiqueta-aprovado');
+        etq.textContent = rotuloSituacao(sit);
+        cartao.appendChild(etq);
+
+        var h1 = document.createElement('h1');
+        h1.textContent = String(pedido.titulo_post || 'Publicação para revisão');
+        cartao.appendChild(h1);
+
+        var of = document.createElement('p');
+        of.className = 'oficina';
+        of.textContent = 'Cliente / Oficina: ' + String(pedido.nome_oficina || '');
+        cartao.appendChild(of);
+
+        var legenda = String(pedido.legenda_post || '').trim();
+        if (legenda) {
+          var blocoLegenda = document.createElement('div');
+          blocoLegenda.className = 'legenda';
+          blocoLegenda.textContent = legenda;
+          cartao.appendChild(blocoLegenda);
+        }
+
+        var midias = Array.isArray(pedido.itens_midia) ? pedido.itens_midia : [];
+        var midiasSeguras = midias.filter(function (m) { return m && urlSegura(m.url); });
+        if (midiasSeguras.length > 0) {
+          var lista = document.createElement('div');
+          lista.className = 'midia-lista';
+          midiasSeguras.forEach(function (m) {
+            var a = document.createElement('a');
+            a.className = 'midia-item';
+            a.href = String(m.url).trim();
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.textContent = String(m.titulo || m.url);
+            lista.appendChild(a);
+          });
+          cartao.appendChild(lista);
+        }
+
+        if (sit === 'pendente') {
+          var lblNome = document.createElement('label');
+          lblNome.textContent = 'Seu nome (opcional)';
+          var inpNome = document.createElement('input');
+          inpNome.type = 'text';
+          inpNome.placeholder = 'Ex.: João da Oficina';
+
+          var lblObs = document.createElement('label');
+          lblObs.textContent = 'Observações ou ajuste desejado';
+          var txtObs = document.createElement('textarea');
+          txtObs.rows = 3;
+          txtObs.placeholder = 'Se pedir ajuste, conte aqui o que precisa mudar';
+
+          var aviso = document.createElement('p');
+          aviso.className = 'recado';
+
+          var botoes = document.createElement('div');
+          botoes.className = 'botoes';
+
+          var btnAprovar = document.createElement('button');
+          btnAprovar.type = 'button';
+          btnAprovar.className = 'btn-aprovar';
+          btnAprovar.textContent = 'Aprovar publicação';
+
+          var btnAjuste = document.createElement('button');
+          btnAjuste.type = 'button';
+          btnAjuste.className = 'btn-ajuste';
+          btnAjuste.textContent = 'Pedir ajuste';
+
+          async function enviarDecisao(decisao) {
+            if (decisao === 'ajuste_pedido' && !txtObs.value.trim()) {
+              aviso.textContent = 'Escreva o ajuste desejado antes de enviar.';
+              return;
+            }
+            btnAprovar.disabled = true;
+            btnAjuste.disabled = true;
+            aviso.textContent = 'Registrando sua resposta…';
+            try {
+              var r = await fetch(cred.url + '/rest/v1/rpc/responder_aprovacao_publica', {
+                method: 'POST',
+                headers: {
+                  'apikey': cred.chave,
+                  'Authorization': 'Bearer ' + cred.chave,
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                  p_codigo: codigo,
+                  p_decisao: decisao,
+                  p_comentario: txtObs.value.trim(),
+                  p_nome_aprovador: inpNome.value.trim()
+                })
+              });
+              if (!r.ok) {
+                aviso.textContent = 'Não foi possível gravar sua resposta agora.';
+                btnAprovar.disabled = false;
+                btnAjuste.disabled = false;
+                return;
+              }
+              var atualizado = await r.json();
+              if (Array.isArray(atualizado) && atualizado.length > 0) {
+                renderizarPedido(atualizado[0], cred, codigo);
+                return;
+              }
+              aviso.textContent = 'Resposta enviada.';
+            } catch (_) {
+              aviso.textContent = 'Falha de conexão. Tente novamente.';
+              btnAprovar.disabled = false;
+              btnAjuste.disabled = false;
+            }
+          }
+
+          btnAprovar.addEventListener('click', function () { enviarDecisao('aprovado_cliente'); });
+          btnAjuste.addEventListener('click', function () { enviarDecisao('ajuste_pedido'); });
+
+          botoes.appendChild(btnAprovar);
+          botoes.appendChild(btnAjuste);
+
+          var pRegra = document.createElement('p');
+          pRegra.className = 'regra-48h';
+          pRegra.textContent = textoContagem48h(pedido);
+
+          cartao.appendChild(lblNome);
+          cartao.appendChild(inpNome);
+          cartao.appendChild(lblObs);
+          cartao.appendChild(txtObs);
+          cartao.appendChild(botoes);
+          cartao.appendChild(aviso);
+          cartao.appendChild(pRegra);
+        } else {
+          var resumo = document.createElement('p');
+          resumo.className = 'recado';
+          var comentario = String(pedido.comentario_cliente || '').trim();
+          resumo.textContent = comentario
+            ? rotuloSituacao(sit) + ' — "' + comentario + '"'
+            : rotuloSituacao(sit) + '.';
+          cartao.appendChild(resumo);
+        }
+
+        app.appendChild(cartao);
+      }
+
+      async function iniciar() {
+        var busca = new URLSearchParams(window.location.search);
+        var codigo = (busca.get('c') || busca.get('t') || busca.get('codigo') || '').trim();
+        if (codigo.length < 16) {
+          mostrarAvisoSimples('Link de aprovação incompleto ou inválido.');
+          return;
+        }
+
+        var cred = await descobrirCredenciaisNuvem();
+        if (!cred) {
+          mostrarAvisoSimples('Configuração da nuvem ausente neste link de aprovação.');
+          return;
+        }
+
+        try {
+          var resp = await fetch(cred.url + '/rest/v1/rpc/consultar_aprovacao_publica', {
+            method: 'POST',
+            headers: {
+              'apikey': cred.chave,
+              'Authorization': 'Bearer ' + cred.chave,
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ p_codigo: codigo })
+          });
+
+          if (!resp.ok) {
+            mostrarAvisoSimples('Não foi possível consultar este pedido de aprovação.');
+            return;
+          }
+          var linhas = await resp.json();
+          if (!Array.isArray(linhas) || linhas.length === 0) {
+            mostrarAvisoSimples('Pedido de aprovação não encontrado.');
+            return;
+          }
+          renderizarPedido(linhas[0], cred, codigo);
+        } catch (_) {
+          mostrarAvisoSimples('Sem conexão no momento. Tente abrir o link novamente.');
+        }
+      }
+
+      iniciar();
+    })();
+  </script>
+</body>
+</html>

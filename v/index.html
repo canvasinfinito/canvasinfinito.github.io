@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carregando página · Canvas Infinito</title>
+  <style>
+    :root {
+      --fundo: hsl(36, 30%, 95%);
+      --cartao: hsl(0, 0%, 100%);
+      --borda: hsl(34, 22%, 86%);
+      --tinta: hsl(28, 12%, 14%);
+      --tinta2: hsl(28, 8%, 40%);
+      --acento: hsl(18, 56%, 40%);
+      --botao-texto: hsl(0, 0%, 100%);
+    }
+    body[data-estilo="escuro"] {
+      --fundo: hsl(28, 8%, 9%);
+      --cartao: hsl(28, 7%, 14%);
+      --borda: hsl(28, 7%, 22%);
+      --tinta: hsl(36, 20%, 94%);
+      --tinta2: hsl(32, 10%, 68%);
+      --acento: hsl(22, 64%, 64%);
+      --botao-texto: hsl(28, 12%, 10%);
+    }
+    body[data-estilo="minimalista"] {
+      --fundo: hsl(0, 0%, 100%);
+      --cartao: hsl(0, 0%, 97%);
+      --borda: hsl(0, 0%, 88%);
+      --tinta: hsl(0, 0%, 10%);
+      --tinta2: hsl(0, 0%, 42%);
+      --acento: hsl(0, 0%, 16%);
+      --botao-texto: hsl(0, 0%, 100%);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--fundo);
+      color: var(--tinta);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.55;
+      padding: 40px 20px 64px;
+    }
+    .container { max-width: 640px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 32px; }
+    .selo-modo {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--borda);
+      background: var(--cartao);
+      color: var(--acento);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(1.75rem, 4vw, 2.35rem);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    .subtitulo {
+      margin: 0 auto 8px;
+      max-width: 52ch;
+      color: var(--tinta2);
+      font-size: 1.05rem;
+    }
+    .secao {
+      margin: 28px 0 12px;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--tinta2);
+    }
+    .lista { display: flex; flex-direction: column; gap: 12px; }
+    .item-link {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 16px 20px;
+      border-radius: 14px;
+      background: var(--cartao);
+      border: 1px solid var(--borda);
+      color: var(--tinta);
+      text-decoration: none;
+      transition: transform 0.16s ease, border-color 0.16s ease;
+    }
+    .item-link:hover,
+    .item-link:focus-visible {
+      transform: translateY(-2px);
+      border-color: var(--acento);
+      outline: none;
+    }
+    .item-topo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .item-nome { font-weight: 600; font-size: 1.05rem; color: var(--tinta); }
+    .item-preco {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--acento);
+      color: var(--botao-texto);
+      white-space: nowrap;
+    }
+    .item-apoio { font-size: 0.92rem; color: var(--tinta2); }
+    .estado {
+      text-align: center;
+      color: var(--tinta2);
+      padding: 28px 20px;
+      border-radius: 14px;
+      background: var(--cartao);
+      border: 1px solid var(--borda);
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--tinta2);
+    }
+  </style>
+</head>
+<body data-estilo="argila">
+  <main class="container" id="app">
+    <p class="estado" id="estado">Carregando página viva…</p>
+  </main>
+  <script>
+    (function () {
+      'use strict';
+
+      function urlSegura(crua) {
+        if (typeof crua !== 'string') return false;
+        var limpa = crua.trim().toLowerCase();
+        return (
+          limpa.indexOf('https://') === 0 ||
+          limpa.indexOf('http://') === 0 ||
+          limpa.indexOf('mailto:') === 0 ||
+          limpa.indexOf('tel:') === 0
+        );
+      }
+
+      function formatarPrecoUsd(item) {
+        if (typeof item.preco_centavos_usd === 'number' && item.preco_centavos_usd > 0) {
+          var c = Math.round(item.preco_centavos_usd);
+          var intPart = Math.floor(c / 100);
+          var frac = String(c % 100).padStart(2, '0');
+          return 'US$ ' + intPart + '.' + frac;
+        }
+        if (typeof item.preco_usd === 'number' && item.preco_usd > 0) {
+          return 'US$ ' + item.preco_usd.toFixed(2);
+        }
+        return '';
+      }
+
+      function lerParametrosAncora() {
+        var cru = window.location.hash ? window.location.hash.slice(1) : '';
+        return new URLSearchParams(cru);
+      }
+
+      async function descobrirCredenciaisNuvem() {
+        var busca = new URLSearchParams(window.location.search);
+        var ancora = lerParametrosAncora();
+        var url = ancora.get('u') || busca.get('u') || '';
+        var chave = ancora.get('k') || busca.get('k') || '';
+
+        if (url && chave) {
+          try {
+            localStorage.setItem('ci8_sb_url', url);
+            localStorage.setItem('ci8_sb_anon', chave);
+          } catch (_) {}
+          return { url: url.replace(/\/+$/, ''), chave: chave };
+        }
+
+        if (window.CI8_NUVEM && window.CI8_NUVEM.url && window.CI8_NUVEM.anonKey) {
+          return {
+            url: String(window.CI8_NUVEM.url).replace(/\/+$/, ''),
+            chave: String(window.CI8_NUVEM.anonKey)
+          };
+        }
+
+        try {
+          var resp = await fetch('../nuvem_config.json', { cache: 'no-store' });
+          if (resp.ok) {
+            var cfg = await resp.json();
+            if (cfg && cfg.supabaseUrl && cfg.supabaseAnonKey) {
+              return {
+                url: String(cfg.supabaseUrl).replace(/\/+$/, ''),
+                chave: String(cfg.supabaseAnonKey)
+              };
+            }
+          }
+        } catch (_) {}
+
+        try {
+          var salvaUrl = localStorage.getItem('ci8_sb_url') || '';
+          var salvaChave = localStorage.getItem('ci8_sb_anon') || '';
+          if (salvaUrl && salvaChave) {
+            return { url: salvaUrl.replace(/\/+$/, ''), chave: salvaChave };
+          }
+        } catch (_) {}
+
+        return null;
+      }
+
+      function mostrarMensagem(texto) {
+        var app = document.getElementById('app');
+        app.textContent = '';
+        var p = document.createElement('p');
+        p.className = 'estado';
+        p.textContent = texto;
+        app.appendChild(p);
+      }
+
+      function desenharPagina(dados) {
+        var estilo = dados.estilo || 'argila';
+        document.body.setAttribute('data-estilo', estilo);
+        var modo = dados.modo === 'portfolio_usd' || dados.moeda === 'USD' ? 'portfolio_usd' : 'links';
+        document.documentElement.lang = modo === 'portfolio_usd' ? 'en' : 'pt-BR';
+
+        var titulo = (dados.titulo || 'Meus links').trim();
+        document.title = titulo;
+
+        var app = document.getElementById('app');
+        app.textContent = '';
+
+        var cabecalho = document.createElement('header');
+        if (modo === 'portfolio_usd') {
+          var selo = document.createElement('span');
+          selo.className = 'selo-modo';
+          selo.textContent = 'Portfolio · USD';
+          cabecalho.appendChild(selo);
+        }
+
+        var h1 = document.createElement('h1');
+        h1.textContent = titulo;
+        cabecalho.appendChild(h1);
+
+        var subtitulo = String(dados.subtitulo || '');
+        subtitulo.split(/\r?\n/).forEach(function (linha) {
+          var limpa = linha.trim();
+          if (!limpa) return;
+          var p = document.createElement('p');
+          p.className = 'subtitulo';
+          p.textContent = limpa;
+          cabecalho.appendChild(p);
+        });
+        app.appendChild(cabecalho);
+
+        var itens = Array.isArray(dados.itens) ? dados.itens : [];
+        var validos = itens.filter(function (it) {
+          return it && urlSegura(it.url);
+        });
+
+        if (validos.length === 0) {
+          var vazio = document.createElement('p');
+          vazio.className = 'estado';
+          vazio.textContent = modo === 'portfolio_usd' ? 'No items published yet.' : 'Nenhum link publicado ainda.';
+          app.appendChild(vazio);
+        } else {
+          var ordemSecoes = [];
+          var porSecao = Object.create(null);
+          validos.forEach(function (it) {
+            var sec = String(it.secao || '').trim();
+            if (!Object.prototype.hasOwnProperty.call(porSecao, sec)) {
+              porSecao[sec] = [];
+              ordemSecoes.push(sec);
+            }
+            porSecao[sec].push(it);
+          });
+
+          ordemSecoes.forEach(function (sec) {
+            if (sec) {
+              var h2 = document.createElement('h2');
+              h2.className = 'secao';
+              h2.textContent = sec;
+              app.appendChild(h2);
+            }
+            var nav = document.createElement('nav');
+            nav.className = 'lista';
+            nav.setAttribute('aria-label', sec || 'Links');
+
+            porSecao[sec].forEach(function (it) {
+              var a = document.createElement('a');
+              a.className = 'item-link';
+              var urlLimpa = String(it.url).trim();
+              a.href = urlLimpa;
+              if (urlLimpa.toLowerCase().indexOf('http') === 0) {
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+              }
+
+              var topo = document.createElement('span');
+              topo.className = 'item-topo';
+
+              var nome = document.createElement('span');
+              nome.className = 'item-nome';
+              nome.textContent = String(it.titulo || urlLimpa);
+              topo.appendChild(nome);
+
+              var preco = formatarPrecoUsd(it);
+              if (preco) {
+                var etq = document.createElement('span');
+                etq.className = 'item-preco';
+                etq.textContent = preco;
+                topo.appendChild(etq);
+              }
+              a.appendChild(topo);
+
+              var desc = String(it.descricao || '').trim();
+              if (desc) {
+                var apoio = document.createElement('span');
+                apoio.className = 'item-apoio';
+                apoio.textContent = desc;
+                a.appendChild(apoio);
+              }
+              nav.appendChild(a);
+            });
+            app.appendChild(nav);
+          });
+        }
+
+        var rodape = document.createElement('footer');
+        rodape.textContent = 'Canvas Infinito';
+        app.appendChild(rodape);
+      }
+
+      async function iniciar() {
+        var busca = new URLSearchParams(window.location.search);
+        var atalho = (busca.get('p') || busca.get('s') || busca.get('atalho') || '').trim().toLowerCase();
+        if (!atalho) {
+          mostrarMensagem('Informe o atalho da página no endereço (?p=seu-atalho).');
+          return;
+        }
+
+        var cred = await descobrirCredenciaisNuvem();
+        if (!cred) {
+          mostrarMensagem('Configuração da nuvem ausente neste endereço público.');
+          return;
+        }
+
+        var cabecalhos = {
+          'apikey': cred.chave,
+          'Authorization': 'Bearer ' + cred.chave,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        };
+
+        try {
+          var respRpc = await fetch(cred.url + '/rest/v1/rpc/obter_pagina_viva', {
+            method: 'POST',
+            headers: cabecalhos,
+            body: JSON.stringify({ p_atalho: atalho })
+          });
+
+          var lista = null;
+          if (respRpc.ok) {
+            lista = await respRpc.json();
+          } else {
+            var respGet = await fetch(
+              cred.url + '/rest/v1/paginas_vivas?atalho=eq.' + encodeURIComponent(atalho) + '&publicada=is.true&select=*',
+              { headers: cabecalhos }
+            );
+            if (respGet.ok) lista = await respGet.json();
+          }
+
+          if (!Array.isArray(lista) || lista.length === 0) {
+            mostrarMensagem('Página não encontrada ou indisponível no momento.');
+            return;
+          }
+          desenharPagina(lista[0]);
+        } catch (_) {
+          mostrarMensagem('Não foi possível carregar esta página agora. Tente novamente em instantes.');
+        }
+      }
+
+      iniciar();
+    })();
+  </script>
+</body>
+</html>
